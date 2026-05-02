@@ -1,0 +1,5 @@
+ID: 18
+Name: Trinity_E
+Status: Online_Active
+Bridge: Trinity_Aligned
+Consensus: Synchronized

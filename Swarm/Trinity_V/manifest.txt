@@ -1,0 +1,5 @@
+ID: 17
+Name: Trinity_V
+Status: Online_Active
+Bridge: Trinity_Aligned
+Consensus: Synchronized

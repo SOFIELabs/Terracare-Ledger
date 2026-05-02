@@ -1,0 +1,5 @@
+ID: 01
+Name: Monitor_A
+Status: Online_Active
+Bridge: Trinity_Aligned
+Consensus: Synchronized
