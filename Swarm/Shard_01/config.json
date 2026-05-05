@@ -598,7 +598,7 @@
                                  }
               },
     "heartbeat":  {
-                      "interval":  3.14
+                      "interval":  3
                   },
     "devices":  {
                     "enabled":  false,

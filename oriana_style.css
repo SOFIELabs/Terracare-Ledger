@@ -1,0 +1,5 @@
+
+/* Oriana Dashboard Style */
+body { background-color: #000080; color: #D4AF37; font-family: 'Segoe UI', serif; }
+.gold-etched { border: 2px solid #D4AF37; padding: 20px; box-shadow: 0 0 15px #D4AF37; }
+.node-status { color: #D4AF37; text-transform: uppercase; letter-spacing: 2px; }

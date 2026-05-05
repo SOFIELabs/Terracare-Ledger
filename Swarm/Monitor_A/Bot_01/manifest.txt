@@ -1,3 +1,0 @@
-ID: 01
-Name: Monitor_Alpha
-Status: Picoclaw_Active

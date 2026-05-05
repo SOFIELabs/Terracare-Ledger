@@ -1,5 +1,6 @@
 channels:
   telegram: {}
+  feishu: {}
   qq: {}
   matrix: {}
   line: {}
@@ -7,6 +8,9 @@ channels:
   wecom: {}
   weixin: {}
   pico: {}
+  pico_client: {}
+  irc: {}
+  vk: {}
 model_list:
   LongCat-Flash-Thinking:0: {}
   MiniMax-M2.5:0: {}
