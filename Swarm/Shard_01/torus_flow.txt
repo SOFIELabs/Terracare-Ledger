@@ -1,0 +1,5 @@
+[LOGIC: TOROIDAL_FLOW_ACTIVE]
+- SHARDING: Every 3rd packet is mirrored to a Shard Group node (01-09).
+- LATENCY_ADJUST: If Pi-Ping > 3.14s, trigger Fibonacci Expansion (Step to 5s).
+- DATA_PUMP: Circulate validated ledger entries back to Trinity (E,S,V) for audit.
+- MESH_SECURE: Encapsulate P2P Meshtastic headers in Hollow Hive metadata.

@@ -1,0 +1,5 @@
+[BUILD_CAPABILITY: SWARM_PUSH]
+- TARGET: https://github.com/DudeAdrian/Oriana.git
+- ASSETS: Generate .png / .json snapshots of Ledger health.
+- FREQUENCY: Layer 9 sync (Every 9 hours).
+- AUTH: Use Sovereign Citizen (SOFIE) credentials for commit signing.

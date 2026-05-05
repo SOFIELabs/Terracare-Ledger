@@ -1,0 +1,21 @@
+{
+    "host": "MoneyMaker",
+    "identity": "S.O.F.I.E. OS : Sovereign Citizen",
+    "version": "6.0.0",
+    "frequency": "3-6-9",
+    "repositories": {
+        "ledger": "C:/Users/squat/Desktop/Terracare_Project/Terracare_Ledger",
+        "messenger": "C:/Users/squat/Desktop/Terracare_Project/Terracare_Messenger",
+        "oriana": "C:/Users/squat/Desktop/Terracare_Project/Oriana"
+    },
+    "swarm": {
+        "pico_claw_main": "Node_01",
+        "fleet_size": 18,
+        "protocol": "Meshtastic_P2P"
+    },
+    "mesh": {
+        "port": "COM3",
+        "baud": 115200,
+        "channel": "TERRACARE_SECURE"
+    }
+}
