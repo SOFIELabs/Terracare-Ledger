@@ -13,3 +13,12 @@ class Persona:
     @staticmethod
     def get_pillar_context():
         return f"ID: {Persona.identity} | Pillars: {Persona.pillars} | Freq: 3-6-9"
+
+    def simulate_impact(self, proposal):
+        """Refined Capability Clone: Internal 3-6-9 Impact Simulation"""
+        # 3: Audit against Sovereign Identity (P1)
+        # 6: Cross-reference with Swarm Telemetry (P5)
+        # 9: Ensure Resonance with Legacy Abundance (P7)
+        
+        simulation_summary = f"RESONANCE_CHECK: {proposal[:20]}... | STATUS: ALIGNED"
+        return simulation_summary

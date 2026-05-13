@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>S.O.F.I.E. OS - MASTER V76</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root { --teal: #00f2ff; --gold: #ffc300; --bg: #000814; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--teal); font-family: 'Consolas', monospace; }
+        .panel { position: absolute; background: rgba(0, 15, 30, 0.98); border: 1px solid var(--teal); border-image: linear-gradient(to bottom, var(--gold), var(--teal)) 1; z-index: 10; padding: 15px; box-sizing: border-box; }
+        
+        .header { top: 15px; left: 15px; right: 15px; height: 60px; display: flex; align-items: center; justify-content: center; }
+        .header-title { color: var(--gold); font-size: 2.2rem; font-weight: 900; letter-spacing: 15px; }
+        .header-ctx { position: absolute; right: 25px; color: var(--teal); font-size: 1rem; font-weight: bold; text-align: right; }
+
+        .u_right { top: 145px; right: 20px; width: 380px; height: 270px; display: flex; flex-direction: column; }
+        .l_left { bottom: 20px; left: 20px; width: 380px; height: 280px; display: flex; flex-direction: column; }
+        .l_right { bottom: 20px; right: 20px; width: 380px; height: 280px; display: flex; flex-direction: column; }
+        .c_stage { bottom: 20px; left: 430px; right: 430px; height: 280px; display: flex; flex-direction: column; }
+
+        /* QUAD GAUGES (L/H ALIGNMENT) */
+        .gauge_box { position: absolute; width: 140px; height: 80px; display: flex; align-items: center; z-index: 20; }
+        .g_1 { bottom: 320px; left: 30px; } .g_2 { bottom: 320px; right: 30px; flex-direction: row-reverse; }
+        .g_3 { bottom: 440px; left: 30px; } .g_4 { bottom: 440px; right: 30px; flex-direction: row-reverse; }
+        .g_val { font-size: 1.4rem; color: var(--gold); font-weight: 900; margin: 0 10px; min-width: 50px; text-align: center; }
+
+        /* HIVE CLUSTER FRAME */
+        .hive_frame { position: absolute; top: 145px; left: 20px; width: 380px; height: 270px; border: 1px solid var(--teal); display: flex; align-items: center; justify-content: center; }
+        .cell { position: absolute; width: 52px; height: 45px; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); background: rgba(0, 242, 255, 0.05); border: 1px solid var(--teal); display: flex; justify-content: center; align-items: center; font-size: 0.6rem; transform: translate(-50%, -50%); cursor: pointer; transition: 0.4s; }
+        .nucleus { border-color: var(--gold); box-shadow: 0 0 15px var(--gold); color: var(--gold); z-index: 20; }
+        .ripple_active { border-color: var(--gold) !important; background: rgba(255,195,0,0.2) !important; box-shadow: 0 0 20px var(--gold) !important; }
+
+        #bot_popup { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 340px; height: 300px; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); background: rgba(0,8,16,0.98); border: 4px solid var(--gold); z-index: 2000; display: none; padding: 50px; text-align: center; }
+        #presence_core { position: absolute; inset: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div id="bot_popup">
+        <h2 id="pop_id" style="color:var(--gold); margin:0;">ID</h2>
+        <div id="pop_name" style="color:var(--teal); margin-top:10px; font-weight:bold;">...</div>
+        <button onclick="document.getElementById('bot_popup').style.display='none'" style="margin-top:20px; border:1px solid var(--red); color:var(--red); background:none; cursor:pointer;">[X]</button>
+    </div>
+
+    <div id="presence_core"></div>
+    <div class="panel header"><div class="header-title">S.O.F.I.E. OS</div><div class="header-ctx" id="head_ctx">...</div></div>
+    
+    <div class="hive_frame"><div id="hive_stage" style="position:relative; width:100%; height:100%;"></div></div>
+    
+    <div class="panel u_right">
+        <div style="color:var(--gold); border-bottom:1px solid var(--gold); margin-bottom:10px; font-size:0.8rem;">TELEMETRY</div>
+        <div style="display:flex; flex-direction:column; gap:12px; font-weight:bold;">
+            <div>CPU | <span id="cpu_v">0%</span></div>
+            <hr style="border:0; border-top:1px solid rgba(0,242,255,0.1);">
+            <div>RAM | <span id="ram_v">0%</span></div>
+            <hr style="border:0; border-top:1px solid rgba(0,242,255,0.1);">
+            <div>GPU | <span id="gpu_v">0.0%</span></div>
+        </div>
+    </div>
+
+    <div class="panel l_left"><div style="color:var(--gold); font-weight:bold; font-size:0.7rem;">AUDIT LOG</div><div id="audit" style="flex-grow:1; overflow-y:auto; font-size:0.75rem;"></div></div>
+    <div class="panel l_right"><div style="color:var(--gold); font-weight:bold; font-size:0.7rem;">STRATA TASKS</div><div id="tasks" style="flex-grow:1; overflow-y:auto; font-size:0.75rem;"></div></div>
+
+    <div class="panel c_stage">
+        <div id="chat" style="flex-grow:1; overflow-y:auto; font-size:0.9rem;"></div>
+        <div style="display:flex; align-items:center; gap:10px; border:1px solid var(--teal); padding:10px; background:rgba(0,20,40,0.5);">
+            <div id="mic" style="color:var(--teal); font-size:1.5rem; cursor:pointer;">🎤</div>
+            <input type="text" id="user_input" style="background:none; border:none; color:var(--teal); width:100%; outline:none;" placeholder="COMMAND...">
+        </div>
+    </div>
+
+    <div class="gauge_box g_1"><div id="gv_1" class="g_val">0%</div><svg width="70" height="70"><circle id="gc_1" cx="35" cy="35" r="30" style="fill:none;stroke:var(--gold);stroke-width:4;stroke-dasharray:188;stroke-dashoffset:188;transition:1s"/></svg></div>
+    <div class="gauge_box g_2"><div id="gv_2" class="g_val">0%</div><svg width="70" height="70"><circle id="gc_2" cx="35" cy="35" r="30" style="fill:none;stroke:var(--gold);stroke-width:4;stroke-dasharray:188;stroke-dashoffset:188;transition:1s"/></svg></div>
+    <div class="gauge_box g_3"><div id="gv_3" class="g_val">0%</div><svg width="70" height="70"><circle id="gc_3" cx="35" cy="35" r="30" style="fill:none;stroke:var(--gold);stroke-width:4;stroke-dasharray:188;stroke-dashoffset:188;transition:1s"/></svg></div>
+    <div class="gauge_box g_4"><div id="gv_4" class="g_val">0%</div><svg width="70" height="70"><circle id="gc_4" cx="35" cy="35" r="30" style="fill:none;stroke:var(--gold);stroke-width:4;stroke-dasharray:188;stroke-dashoffset:188;transition:1s"/></svg></div>
+
+    <script>
+        const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true }); renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('presence_core').appendChild(renderer.domElement);
+        const sphere = new THREE.Points(new THREE.IcosahedronGeometry(4, 5), new THREE.PointsMaterial({ color: 0x00f2ff, size: 0.08, transparent: true, opacity: 0.6 }));
+        scene.add(sphere); sphere.position.set(0, 4, 0); camera.position.z = 15;
+        function animate() { requestAnimationFrame(animate); sphere.rotation.y += 0.003; renderer.render(scene, camera); } animate();
+        
+        const stage = document.getElementById('hive_stage');
+        const hiveMap = [{x:0, y:0, id:'SOFIE'}, {x:0, y:-1, id:'T_S'}, {x:0, y:1, id:'T_V'}, {x:1, y:-0.5, id:'T_E'}, {x:-1, y:-0.5, id:'S_01'}, {x:1, y:0.5, id:'S_02'}, {x:-1, y:0.5, id:'S_03'}, {x:0, y:-2, id:'M_F'}, {x:0, y:2, id:'M_E'}, {x:1, y:-1.5, id:'S_04'}, {x:-1, y:-1.5, id:'S_05'}, {x:1, y:1.5, id:'S_06'}, {x:-1, y:1.5, id:'S_07'}, {x:2, y:-1, id:'M_A'}, {x:-2, y:-1, id:'M_B'}, {x:2, y:0, id:'M_C'}, {x:-2, y:0, id:'M_D'}, {x:2, y:1, id:'S_08'}, {x:-2, y:1, id:'S_09'}];
+        hiveMap.forEach((p) => { 
+            let c = document.createElement('div'); c.id=`hex_${p.id}`; c.className=`cell ${p.id=='SOFIE'?'nucleus':''}`; 
+            c.style.left=`calc(50% + ${p.x*39}px)`; c.style.top=`calc(50% + ${p.y*45}px)`; 
+            c.onclick = () => launchBot(p.id); c.innerHTML=`<span>${p.id}</span>`; stage.appendChild(c); 
+        });
+
+        async function launchBot(id) {
+            const r = await fetch(`http://127.0.0.1:5000/bot/${id}`); const d = await r.json();
+            document.getElementById('pop_id').innerText = d.id; document.getElementById('pop_name').innerText = d.name;
+            document.getElementById('bot_popup').style.display='block';
+        }
+
+        function runRipple() {
+            hiveMap.forEach((p, i) => {
+                setTimeout(() => {
+                    const el = document.getElementById(`hex_${p.id}`);
+                    if(el) { el.classList.add('ripple_active'); setTimeout(() => el.classList.remove('ripple_active'), 600); }
+                }, i * 100);
+            });
+        }
+
+        let chatLen = 0; async function sync() {
+            try {
+                const r = await fetch('http://127.0.0.1:5000/pulse'); const d = await r.json();
+                document.getElementById('head_ctx').innerText = `${d.ctx.loc}\n${d.ctx.time}`;
+                document.getElementById('cpu_v').innerText = `${d.hw.cpu}%`;
+                document.getElementById('ram_v').innerText = `${d.hw.ram}%`;
+                document.getElementById('gpu_v').innerText = d.hw.gpu;
+                
+                const active = d.state !== "idle";
+                if(active || chatLen === 0) runRipple();
+                
+                document.getElementById('audit').innerHTML = d.audit.map(a => `<div>${a}</div>`).join('');
+                document.getElementById('tasks').innerHTML = Object.entries(d.tasks).map(([n, s]) => `<div style="color:${s==='completed'?'#ff4444':'#00ff88'}">${n}</div>`).join('');
+                document.getElementById('chat').innerHTML = d.chat.map(m => `<div>[${m.role.toUpperCase()}] ${m.content}</div>`).join('');
+                d.gauges.forEach((v, i) => { 
+                    if(document.getElementById(`gc-${i+1}`)) {
+                        document.getElementById(`gc-${i+1}`).style.strokeDashoffset = 188 - (188 * v / 100);
+                        document.getElementById(`gv-${i+1}`).innerText = `${v}%`;
+                    }
+                });
+                if(d.chat.length > chatLen) { 
+                    const last = d.chat[d.chat.length-1]; if(last.launch) launchBot(last.launch); chatLen = d.chat.length; 
+                }
+            } catch(e) {}
+        } setInterval(sync, 1000);
+        document.getElementById('user_input').onkeypress = async (e) => { if (e.key === 'Enter') { let t = e.target.value; e.target.value = ''; await fetch('http://127.0.0.1:5000/talk', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text:t}) }); } };
+    </script>
+</body>
+</html>
