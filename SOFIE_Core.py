@@ -1,5 +1,6 @@
 # ============================================================
 # LABEL: [NEURAL_CORE_V76] - ABSOLUTE NEURAL HANDSHAKE
+# ALIGNMENT: FULL 18-NODE CODING CAPABILITY + TERRACARE LEDGER
 # ============================================================
 import os, threading, psutil, ollama, pyttsx3, random, requests, GPUtil, datetime, json
 
@@ -7,6 +8,8 @@ class SOFIE_Brain:
     def __init__(self):
         self.root_path = r"C:\Users\squat\Desktop\Terracare_Project"
         self.ledger_path = os.path.join(self.root_path, "Terracare_Ledger")
+        self.swarm_path = os.path.join(self.ledger_path, "Swarm")
+        self.log_file = os.path.join(self.swarm_path, "SOFIE_Core.log")
         self.history = []
         self.state = "idle"
         self.ready = False
@@ -43,22 +46,37 @@ class SOFIE_Brain:
         threading.Thread(target=run_voice).start()
 
     def process(self, text):
+        """NEURAL CORE: CODING CAPABILITY + LEDGER SYNC"""
         self.state = "thinking"
         self.history.append({"role": "architect", "content": text})
-        launch_id = None
-        if "sofie" in text.lower(): launch_id = "SOFIE"
+        launch_id = "SOFIE"
+        
+        # Strata Engagement: Detect which node is the target
         for key in self.full_swarm.keys():
-            if key.lower() in text.lower().replace("-", "_"): launch_id = key; break
+            if key.lower() in text.lower().replace("-", "_"): 
+                launch_id = key
+                break
 
         try:
             res = ollama.chat(model='llama3', messages=[
-                {'role': 'system', 'content': 'You are S.O.F.I.E. Master OS. Underscore protocol locked. Direct strata engagement.'},
+                {'role': 'system', 'content': 'You are S.O.F.I.E. Master OS. Underscore protocol locked. Direct strata engagement. You build the TerraCare Ledger.'},
                 {'role': 'user', 'content': text}
             ])
             reply = res['message']['content']
+            
+            # --- THE UNDERSCORE LEDGER ANCHOR ---
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            log_entry = f"_[{timestamp}]_ NODE_{launch_id} | CMD: {text[:60]} | STATUS: ALIGNED\n"
+            
+            if os.path.exists(self.swarm_path):
+                with open(self.log_file, "a") as f:
+                    f.write(log_entry)
+            
             self.history.append({"role": "sofie", "content": reply, "launch": launch_id})
             self.speak(reply)
-        except: self.state = "idle"
+        except Exception as e:
+            print(f"ALGN_FAIL: {e}")
+            self.state = "idle"
 
 brain = SOFIE_Brain()
 from flask import Flask, jsonify, request

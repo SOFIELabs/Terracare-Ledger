@@ -1,0 +1,5 @@
+models:
+  picobrain:
+    provider: ollama
+    model: picobrain
+    url: http://localhost:11434
