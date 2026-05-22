@@ -1,5 +1,0 @@
-[BUILD_CAPABILITY: OMNI_PUSH]
-- TARGET: https://github.com/DudeAdrian/Oriana
-- ASSETS: Navy/Gold Dashboard Snapshot
-- FREQUENCY: Layer 9 Sync (9-hour Fibonacci)
-- IDENTITY: SOFIE_JARVIS_OPTIMIZED

@@ -1,4 +1,6 @@
 import os
+os.chdir(r'C:\Users\squat\desktop\Terracare_Project\Terracare_Ledger')
+import os
 import time
 
 def sync_picoclaw_grid():
@@ -30,3 +32,4 @@ def sync_picoclaw_grid():
 
 if __name__ == "__main__":
     sync_picoclaw_grid()
+
