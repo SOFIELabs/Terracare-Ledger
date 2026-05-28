@@ -1,0 +1,76 @@
+[
+  {
+    "type": "IDENTITY_REGISTER",
+    "handle": "@sovereign_user",
+    "timestamp": 1748394847000,
+    "entry": 1,
+    "platforms": ["oriana", "messenger", "pollen"]
+  },
+  {
+    "type": "NFT_MINT",
+    "handle": "@sovereign_user",
+    "tokenId": "NFT_1K9X3A_F7B2C1",
+    "colour": "#F5A623",
+    "tier": "COMMON",
+    "platforms": ["oriana", "messenger", "pollen"],
+    "rights": "ALL_RIGHTS_RESERVED",
+    "timestamp": 1748394850000,
+    "entry": 2
+  },
+  {
+    "type": "POLLEN_EARN",
+    "handle": "@sovereign_user",
+    "amount": 50,
+    "reason": "welcome_bonus",
+    "timestamp": 1748394850000,
+    "entry": 3
+  },
+  {
+    "type": "CONTENT_POST",
+    "handle": "@sovereign_user",
+    "contentId": "POST_1K9X3B",
+    "type_detail": "POST",
+    "timestamp": 1748395200000,
+    "entry": 4
+  },
+  {
+    "type": "POLLEN_EARN",
+    "handle": "@sovereign_user",
+    "amount": 10,
+    "reason": "post_created",
+    "timestamp": 1748395200000,
+    "entry": 5
+  },
+  {
+    "type": "BLOOM_HARVEST",
+    "handle": "@sovereign_user",
+    "bloomId": "BLOOM_1K9X3C",
+    "pollenHarvested": 25,
+    "timestamp": 1748398800000,
+    "entry": 6
+  },
+  {
+    "type": "FAUNA_CATCH",
+    "handle": "@sovereign_user",
+    "faunaName": "Platypus",
+    "sector": "VIC",
+    "rarity": "rare",
+    "pollenEarned": 30,
+    "timestamp": 1748402400000,
+    "entry": 7
+  },
+  {
+    "type": "MONTHLY_SNAPSHOT",
+    "handle": "@sovereign_user",
+    "month": "2026-05",
+    "totalPollenEarned": 115,
+    "totalPollenSpent": 0,
+    "postsCreated": 1,
+    "bloomsHarvested": 1,
+    "faunaCaught": 1,
+    "messagesSent": 5,
+    "chainIntegrity": "VERIFIED",
+    "timestamp": 1748476800000,
+    "entry": 8
+  }
+]

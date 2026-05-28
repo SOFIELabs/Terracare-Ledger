@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerracareIdentity",
+  "description": "Canonical schema for oriana_identity in localStorage — shared across Oriana, Terracare_Messenger, and Pollen Wallet",
+  "type": "object",
+  "required": ["handle", "tokenId", "credits", "registeredAt"],
+  "properties": {
+    "handle": {
+      "type": "string",
+      "description": "User's sovereign handle e.g. @username"
+    },
+    "bio": {
+      "type": "string",
+      "description": "User's sovereign declaration / bio"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Optional recovery email. Stored on-device only. Never transmitted. Governed by Australian Privacy Act 1988."
+    },
+    "monthlyReportOptIn": {
+      "type": "boolean",
+      "description": "User has opted in to receive monthly sovereign ledger report by email"
+    },
+    "tokenId": {
+      "type": "string",
+      "description": "Sovereign NFT token ID — this IS the identity. Format: NFT_[base36timestamp]_[random]"
+    },
+    "nftImage": {
+      "type": "string",
+      "description": "Base64 data URL of the user's NFT avatar image"
+    },
+    "nftColour": {
+      "type": "string",
+      "description": "Hex colour of the user's NFT card border/glow"
+    },
+    "credits": {
+      "type": "number",
+      "description": "Current Pollen wallet balance"
+    },
+    "registeredAt": {
+      "type": "integer",
+      "description": "Unix timestamp in milliseconds when identity was registered"
+    },
+    "registeredAtStr": {
+      "type": "string",
+      "description": "Human-readable registration timestamp in Australian Eastern Time"
+    },
+    "ledgerEntry": {
+      "type": "integer",
+      "description": "The ledger entry number of the identity registration event"
+    }
+  }
+}

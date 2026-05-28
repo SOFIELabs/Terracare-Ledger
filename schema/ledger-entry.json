@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TerracareLedgerEntry",
+  "description": "Canonical schema for every entry in the Terracare on-device sovereign ledger (terracare_ledger in localStorage)",
+  "type": "object",
+  "required": ["type", "timestamp", "entry"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "IDENTITY_REGISTER",
+        "NFT_MINT",
+        "POLLEN_EARN",
+        "POLLEN_SPEND",
+        "CONTENT_POST",
+        "CONTENT_VIDEO",
+        "BLOOM_HARVEST",
+        "FAUNA_CATCH",
+        "GIFT_SEND",
+        "MESSAGE_SENT",
+        "SHOP_LAUNCH",
+        "MARKET_PURCHASE",
+        "MONTHLY_SNAPSHOT"
+      ],
+      "description": "The type of ledger event"
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp in milliseconds (Date.now())"
+    },
+    "entry": {
+      "type": "integer",
+      "description": "Sequential entry number in the user's ledger chain (1-indexed)"
+    },
+    "handle": {
+      "type": "string",
+      "description": "User's sovereign handle e.g. @username"
+    },
+    "tokenId": {
+      "type": "string",
+      "description": "NFT token ID (present on NFT_MINT entries)"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Pollen amount (present on POLLEN_EARN / POLLEN_SPEND entries)"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Human-readable reason for pollen transaction"
+    },
+    "contentId": {
+      "type": "string",
+      "description": "Content identifier (present on CONTENT_POST / CONTENT_VIDEO entries)"
+    },
+    "platforms": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Platforms this entry is visible on: oriana, messenger, pollen"
+    },
+    "hash": {
+      "type": "string",
+      "description": "SHA-256 hash of this entry for chain integrity verification"
+    }
+  }
+}
