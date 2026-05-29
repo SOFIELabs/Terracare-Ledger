@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0A0800" />
+  <meta name="description" content="Terracare Ledger — Public ecosystem explorer. Conservation dashboard, community voting, fund allocation, live ledger feed." />
+  <title>Terracare Ledger</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0A0800;
+      --bg2:         #111000;
+      --bg3:         #1A1500;
+      --border:      #2A2200;
+      --amber:       #FFD166;
+      --amber2:      #F5A623;
+      --green:       #00FF88;
+      --blue:        #4FC3F7;
+      --purple:      #CE93D8;
+      --red:         #FF3B30;
+      --orange:      #FF9500;
+      --text:        #F0E8D0;
+      --text2:       #A09070;
+      --text3:       #605040;
+      --font:        'Courier New', Courier, monospace;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--amber); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── Header ───────────────────────────────────────────────────────────── */
+    .header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-hex {
+      width: 32px;
+      height: 32px;
+      background: var(--amber);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--amber);
+      letter-spacing: 2px;
+    }
+
+    .header-sub {
+      font-size: 10px;
+      color: var(--text2);
+      letter-spacing: 1px;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+
+    #live-clock {
+      font-size: 11px;
+      color: var(--text2);
+    }
+
+    .header-badge {
+      font-size: 9px;
+      color: var(--green);
+      letter-spacing: 1px;
+    }
+
+    /* ─── Tab Bar ──────────────────────────────────────────────────────────── */
+    .tab-bar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tab-bar::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text2);
+      font-family: var(--font);
+      font-size: 11px;
+      letter-spacing: 1px;
+      padding: 12px 18px;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .tab-btn:hover { color: var(--text); }
+
+    .tab-btn.active {
+      color: var(--amber);
+      border-bottom-color: var(--amber);
+    }
+
+    /* ─── Tab Panels ───────────────────────────────────────────────────────── */
+    .tab-panel {
+      display: none;
+      padding: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .tab-panel.active { display: block; }
+
+    /* ─── Section Title ────────────────────────────────────────────────────── */
+    .section-title {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--amber2);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin: 24px 0 14px;
+    }
+
+    .section-title:first-child { margin-top: 0; }
+
+    /* ─── Empty State ──────────────────────────────────────────────────────── */
+    .empty-state {
+      color: var(--text3);
+      font-size: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+    }
+
+    /* ─── Ledger Note ──────────────────────────────────────────────────────── */
+    .ledger-note {
+      font-size: 10px;
+      color: var(--text3);
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 24px;
+      line-height: 1.6;
+    }
+
+    /* ─── LIVE FEED ────────────────────────────────────────────────────────── */
+    .feed-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--amber);
+      margin-bottom: 12px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .entry-count {
+      margin-left: auto;
+      color: var(--text2);
+      font-size: 10px;
+    }
+
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .feed-row {
+      display: grid;
+      grid-template-columns: 160px 120px 1fr 160px;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 8px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: 11px;
+    }
+
+    .feed-row:hover { background: var(--bg3); }
+
+    .feed-badge {
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 2px 6px;
+      border-radius: 2px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .badge-fauna    { background: #0D3320; color: var(--green); }
+    .badge-pollen   { background: #2A1A00; color: var(--amber); }
+    .badge-identity { background: #1A0D2A; color: var(--purple); }
+    .badge-vote     { background: #0D1A2A; color: var(--blue); }
+    .badge-bloom    { background: #1A2A0D; color: #8BC34A; }
+    .badge-gift     { background: #2A0D1A; color: #FF6B9D; }
+    .badge-trade    { background: #1A1A0D; color: var(--amber2); }
+    .badge-default  { background: var(--bg3); color: var(--text2); }
+
+    .feed-actor { color: var(--text2); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .feed-detail { color: var(--text3); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .feed-time { color: var(--text3); font-size: 10px; text-align: right; }
+
+    /* ─── STATS ────────────────────────────────────────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      color: var(--amber);
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text2);
+      letter-spacing: 1px;
+    }
+
+    .action-bars { display: flex; flex-direction: column; gap: 6px; }
+
+    .action-bar-row {
+      display: grid;
+      grid-template-columns: 200px 1fr 60px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .action-bar-label { font-size: 11px; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .action-bar-track {
+      background: var(--bg3);
+      border-radius: 2px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .action-bar-fill {
+      height: 100%;
+      background: var(--amber);
+      border-radius: 2px;
+      transition: width 0.5s;
+    }
+
+    .action-bar-count { font-size: 11px; color: var(--amber); text-align: right; }
+
+    /* ─── CONSERVATION ─────────────────────────────────────────────────────── */
+    .cons-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .cons-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .cons-card.critical { border-color: var(--red); }
+
+    .cons-value { font-size: 28px; color: var(--green); font-weight: bold; margin-bottom: 4px; }
+    .cons-card.critical .cons-value { color: var(--red); }
+    .cons-label { font-size: 10px; color: var(--text2); letter-spacing: 1px; }
+
+    .status-breakdown { display: flex; flex-direction: column; gap: 6px; }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+    }
+
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .status-name { flex: 1; font-size: 11px; color: var(--text); }
+    .status-count { font-size: 11px; color: var(--text2); }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .state-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+    }
+
+    .state-name { font-size: 14px; color: var(--amber); font-weight: bold; margin-bottom: 8px; }
+
+    .state-bar-track {
+      background: var(--bg3);
+      border-radius: 2px;
+      height: 6px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .state-bar-fill { height: 100%; background: var(--green); border-radius: 2px; }
+
+    .state-stats { display: flex; justify-content: space-between; font-size: 10px; color: var(--text2); }
+    .state-critical { color: var(--red); }
+
+    .top-species { display: flex; flex-direction: column; gap: 4px; }
+
+    .species-row {
+      display: grid;
+      grid-template-columns: 30px 28px 1fr 50px 160px 100px;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: 11px;
+    }
+
+    .species-rank { color: var(--text3); }
+    .species-emoji { font-size: 16px; }
+    .species-name { color: var(--text); }
+    .species-state { color: var(--text2); }
+    .species-status { font-size: 10px; }
+    .species-count { color: var(--amber); text-align: right; }
+
+    .all-species {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .species-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--text2);
+    }
+
+    .species-chip.encountered {
+      border-color: var(--green);
+      color: var(--text);
+    }
+
+    .chip-name { font-size: 10px; }
+    .chip-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+    /* ─── FUND ALLOCATION ──────────────────────────────────────────────────── */
+    .fund-total { font-size: 13px; color: var(--text2); margin-bottom: 16px; }
+    .fund-total strong { color: var(--amber); }
+
+    .fund-bars { display: flex; flex-direction: column; gap: 10px; }
+
+    .fund-row {
+      display: grid;
+      grid-template-columns: 28px 200px 1fr 50px 120px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .fund-icon { font-size: 16px; text-align: center; }
+    .fund-label { font-size: 12px; color: var(--text); }
+
+    .fund-track {
+      background: var(--bg3);
+      border-radius: 2px;
+      height: 10px;
+      overflow: hidden;
+    }
+
+    .fund-fill { height: 100%; border-radius: 2px; }
+    .fund-pct { font-size: 12px; color: var(--text2); text-align: right; }
+    .fund-amount { font-size: 11px; color: var(--amber); text-align: right; }
+
+    .conservation-splits { display: flex; flex-direction: column; gap: 6px; }
+
+    .cs-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    .cs-label { color: var(--text); }
+    .cs-pct { color: var(--green); font-weight: bold; }
+
+    /* ─── VOTING ───────────────────────────────────────────────────────────── */
+    .voting-intro {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .voting-no-identity {
+      font-size: 12px;
+      color: var(--text2);
+      padding: 16px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+
+    .identity-link { color: var(--amber); margin-left: 8px; }
+
+    .create-proposal-panel {
+      background: var(--bg2);
+      border: 1px solid var(--amber2);
+      border-radius: 4px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .create-title {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--amber);
+      margin-bottom: 12px;
+    }
+
+    .prop-input, .prop-select, .prop-textarea {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 2px;
+      margin-bottom: 8px;
+      outline: none;
+    }
+
+    .prop-input:focus, .prop-select:focus, .prop-textarea:focus {
+      border-color: var(--amber);
+    }
+
+    .prop-textarea { height: 80px; resize: vertical; }
+
+    .prop-select option { background: var(--bg2); }
+
+    .prop-submit-btn {
+      background: var(--amber);
+      color: var(--bg);
+      border: none;
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      padding: 10px 20px;
+      border-radius: 2px;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+
+    .prop-submit-btn:hover { opacity: 0.85; }
+
+    .proposal-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+
+    .proposal-card.passed { border-color: #00FF8840; }
+    .proposal-card.failed { border-color: #FF3B3040; }
+
+    .proposal-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .proposal-category { font-size: 10px; letter-spacing: 1px; font-weight: bold; }
+    .proposal-status { font-size: 10px; letter-spacing: 1px; font-weight: bold; }
+
+    .proposal-title {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: bold;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .proposal-desc {
+      font-size: 11px;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .proposal-meta {
+      font-size: 10px;
+      color: var(--text3);
+      margin-bottom: 12px;
+    }
+
+    .vote-bars { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+
+    .vote-bar-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 80px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .vote-label { font-size: 11px; font-weight: bold; }
+    .vote-label.yes { color: var(--green); }
+    .vote-label.no  { color: var(--red); }
+
+    .vote-track {
+      background: var(--bg3);
+      border-radius: 2px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .vote-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+    .vote-fill.yes { background: var(--green); }
+    .vote-fill.no  { background: var(--red); }
+
+    .vote-count { font-size: 11px; color: var(--text2); text-align: right; }
+
+    .quorum-status {
+      font-size: 10px;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+
+    .quorum-status.met { color: var(--green); }
+
+    .vote-actions { display: flex; gap: 8px; }
+
+    .vote-btn {
+      flex: 1;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      padding: 8px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .vote-btn.yes:hover { background: #0D3320; border-color: var(--green); color: var(--green); }
+    .vote-btn.no:hover  { background: #2A0D0D; border-color: var(--red);   color: var(--red); }
+
+    .voted-badge {
+      font-size: 11px;
+      color: var(--text2);
+      padding: 6px 10px;
+      background: var(--bg3);
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    .voted-badge strong { color: var(--amber); }
+
+    /* ─── Footer ───────────────────────────────────────────────────────────── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+      text-align: center;
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 1px;
+      margin-top: 40px;
+    }
+
+    .footer a { color: var(--text2); }
+
+    /* ─── Responsive ───────────────────────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .feed-row { grid-template-columns: 1fr 1fr; }
+      .feed-actor, .feed-time { display: none; }
+      .fund-row { grid-template-columns: 28px 1fr 50px; }
+      .fund-amount { display: none; }
+      .species-row { grid-template-columns: 28px 1fr 80px; }
+      .species-rank, .species-state, .species-status { display: none; }
+      .action-bar-row { grid-template-columns: 1fr 60px; }
+      .action-bar-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Header ─────────────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-logo">
+      <div class="header-hex">🍯</div>
+      <div>
+        <div class="header-title">TERRACARE LEDGER</div>
+        <div class="header-sub">PUBLIC ECOSYSTEM EXPLORER</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="live-clock"></div>
+      <div class="header-badge">● SOVEREIGN · TRANSPARENT · PERMANENT</div>
+    </div>
+  </header>
+
+  <!-- ─── Tab Bar ─────────────────────────────────────────────────────────── -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="feed">LIVE FEED</button>
+    <button class="tab-btn" data-tab="conservation">CONSERVATION</button>
+    <button class="tab-btn" data-tab="fund">FUND ALLOCATION</button>
+    <button class="tab-btn" data-tab="stats">ECOSYSTEM STATS</button>
+    <button class="tab-btn" data-tab="voting">VOTING</button>
+  </nav>
+
+  <!-- ─── Tab Panels ──────────────────────────────────────────────────────── -->
+  <main>
+    <div id="tab-feed"         class="tab-panel active"></div>
+    <div id="tab-conservation" class="tab-panel"></div>
+    <div id="tab-fund"         class="tab-panel"></div>
+    <div id="tab-stats"        class="tab-panel"></div>
+    <div id="tab-voting"       class="tab-panel"></div>
+  </main>
+
+  <!-- ─── Footer ──────────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    TERRACARE LEDGER · UNDERSCORE PROTOCOL · HARMONIC HABITATS
+    <br />
+    <a href="/">oriana.app</a> · <a href="/covenant">Community Covenant</a> · <a href="/privacy">Privacy Policy</a>
+    <br />
+    Every entry is signed, timestamped, and permanent. No central authority.
+  </footer>
+
+  <!-- ─── Scripts ─────────────────────────────────────────────────────────── -->
+  <script src="conservation.js"></script>
+  <script src="voting.js"></script>
+  <script src="ledger_ui.js"></script>
+
+</body>
+</html>

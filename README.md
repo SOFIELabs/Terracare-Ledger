@@ -1,137 +1,218 @@
-# Terracare Ledger
+# TERRACARE LEDGER
+### Sovereign Ecosystem Ledger | Harmonic Habitats
 
-> **Layer 1 of the Seven Pillar Architecture** — *Foundation for S.O.F.I.E.*
-
-Tokenless, permissioned PoA ledger for Heartware, Sofie-Systems OS, and sandironratio-node.
-
-[![Seven Pillars](https://img.shields.io/badge/Seven%20Pillars-v1.0.0-blue)](./SEVEN_PILLARS.md)
-[![S.O.F.I.E.](https://img.shields.io/badge/S.O.F.I.E.-Origin%20Layer-orange)](./SEVEN_PILLARS.md)
+> *Every action signed. Every entry timestamped. Every record permanent. No central authority.*
 
 ---
 
-## Seven Pillar Mapping
+## ECOSYSTEM OVERVIEW
 
-| Pillar | Chamber | Contracts | API Prefix |
-|--------|---------|-----------|------------|
-| **P1**: Underground Knowledge | 1 - Root Cellar | `IdentityRegistry` | `/p1/identity/*` |
-| **P2**: Mental Models | 2 - Mirror Hall | `AccessControl` | `/p2/access/*` |
-| **P3**: Reverse Engineering | 3 - Portrait Gallery | `RecordRegistry` | `/p3/records/*` |
-| **P4**: Strategic Dominance | 4 - Observatory Tower | `AuditLog`, `GovernanceBridge` | `/p4/governance/*` |
-| **P5**: Black Market Tactics | 5 - Midnight Garden | `ActivityRegistry` | `/p5/participation/*` |
-| **P6**: Forbidden Frameworks | 6 - Laboratory | `TokenEngine` | `/p6/tokens/*` |
-| **P7**: Billionaire Mindset | 7 - Throne Room | `RevenueDistributor` | `/p7/revenue/*` |
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    TERRACARE ECOSYSTEM                       │
+├──────────────┬──────────────┬──────────────┬────────────────┤
+│   ORIANA     │  TC-LEDGER   │  MESSENGER   │    POLLEN      │
+│              │  (this repo) │              │  (future v2)   │
+│  PWA + App   │  Ledger UI   │  Sovereign   │  AI Wallet     │
+│  AR Fauna    │  Swarm       │  Messenger   │  Agent Layer   │
+│  Pollen      │  Voting      │  P2P Comms   │  Economics     │
+└──────────────┴──────────────┴──────────────┴────────────────┘
+```
 
----
-
-## Features
-
-- **Tokenless** (gasPrice=0), private PoA network
-- **Identity + Access + Record + Audit** contracts
-- **Hashes/pointers only** (keep PHI off-chain)
-- **Dual-token economics**: MINE (participation) + WELL (utility)
-- **Hardhat** scripts for deploy/test
+**GitHub Repos:**
+- Terracare-Ledger: https://github.com/DudeAdrian/Terracare-Ledger ← this repo
+- Oriana: https://github.com/DudeAdrian/Oriana
+- Terracare-Messenger: https://github.com/DudeAdrian/terracare-messenger
+- Pollen (AI layer): https://github.com/DudeAdrian/pollen
 
 ---
 
-## Quickstart
+## WHAT THE TERRACARE LEDGER IS
 
+The Terracare Ledger is the **source of truth** for the entire Terracare ecosystem. It is:
+
+- **Sovereign** — no central authority, no single point of failure
+- **Transparent** — every entry is publicly readable via the Ledger UI
+- **Permanent** — entries are signed and cannot be altered
+- **Participatory** — community voting is built in
+
+Every action across Oriana, Messenger, and Pollen is written to the Ledger using the **Underscore Protocol**.
+
+---
+
+## REPOSITORY STRUCTURE
+
+```
+Terracare-Ledger/
+├── ledger-ui/                  ← PUBLIC LEDGER EXPLORER (Phase 25/27)
+│   ├── index.html              ← Standalone PWA — 5 tabs
+│   ├── ledger_ui.js            ← Core UI engine + tab rendering
+│   ├── conservation.js         ← Conservation dashboard module
+│   ├── voting.js               ← Community voting system
+│   └── manifest.json           ← PWA manifest
+├── Swarm/                      ← LOCAL SWARM TOOLS (Phase 23)
+│   ├── mass_clone.py           ← Clone all 18 seed nodes
+│   ├── server_deploy.py        ← Deploy to HP Gen 8 + seed nodes
+│   └── cell_agent_spawn.py     ← Spawn Cell Agents on Swarm nodes
+├── schema/                     ← LEDGER SCHEMA
+│   ├── ledger-entry.json       ← Entry schema definition
+│   └── identity.json           ← Identity schema definition
+├── examples/                   ← EXAMPLE DATA
+│   └── sample-ledger.json      ← Sample ledger entries
+└── LEDGER_SPEC.md              ← Full ledger specification
+```
+
+---
+
+## LEDGER UI — PUBLIC EXPLORER
+
+The Ledger UI is a standalone PWA at `ledger-ui/` that provides public, read-only access to the Terracare ecosystem data.
+
+### Tabs
+
+| Tab | Description |
+|-----|-------------|
+| **LIVE FEED** | Real-time stream of all ledger entries, colour-coded by action type, auto-refreshes every 5 seconds |
+| **CONSERVATION** | 40 tracked species across all 8 states/territories, encounter counts, conservation status breakdown, state-by-state progress |
+| **FUND ALLOCATION** | Revenue split visualisation (70/4/15/5/6), live Pollen totals, conservation fund sub-allocation |
+| **ECOSYSTEM STATS** | Total entries, unique actors, fauna captured, top actions, your identity/balance |
+| **VOTING** | Community proposals, YES/NO voting, quorum tracking, results published to ledger |
+
+### Running the Ledger UI
 ```bash
-npm install
-npm run build
-npm run deploy:local      # in-process dev chain
-npm run deploy:custom     # uses TERRACARE_RPC_URL
+# Serve locally
+npx serve Terracare-Ledger/ledger-ui/
+
+# Or with Python
+python -m http.server 8080 --directory Terracare-Ledger/ledger-ui/
+```
+Open: http://localhost:8080
+
+### Deploying the Ledger UI
+Deploy `ledger-ui/` as a static site:
+- **Cloudflare Pages**: root = `ledger-ui/`, no build command
+- **Vercel**: same config
+- **Self-hosted**: serve with nginx
+
+---
+
+## SWARM
+
+The Terracare Swarm is a local Python-based mesh network of 18 seed nodes managed from a VIC master node running on an HP ProLiant Gen 8 server.
+
+### Nodes
+- **VIC Master** — HP ProLiant Gen 8 (primary orchestrator)
+- **18 Seed Nodes** — distributed across Australia
+- **Cell Agents** — one per user, bound to sovereign identity
+
+### Swarm Tools
+```bash
+# Clone all 18 seed nodes
+python Swarm/mass_clone.py
+
+# Deploy to HP Gen 8 + seed nodes
+python Swarm/server_deploy.py
+
+# Spawn Cell Agents
+python Swarm/cell_agent_spawn.py
+```
+
+> **Note:** Swarm tools are for local/server use only. Do not run on untrusted networks.
+
+---
+
+## UNDERSCORE PROTOCOL
+
+All ledger entries follow the Underscore Protocol format:
+
+```
+_[timestamp]_ ACTION | KEY: value | ECOSYSTEM: TERRACARE_LEDGER
+```
+
+### Example Entries
+```
+_1748484000000_ CELL_AGENT_BIRTH | publicKey: abc123... | ECOSYSTEM: TERRACARE_LEDGER
+_1748484001000_ FAUNA_CATCH | species: Tasmanian Devil | rarity: RARE | pollen: 150 | ECOSYSTEM: TERRACARE_LEDGER
+_1748484002000_ POLLEN_REWARD | amount: 50 | reason: DAILY_QUESTIONNAIRE | ECOSYSTEM: TERRACARE_LEDGER
+_1748484003000_ VOTE_CAST | proposalId: prop_001 | vote: YES | ECOSYSTEM: TERRACARE_LEDGER
+_1748484004000_ FUND_ALLOCATION | conservation: 15% | creators: 70% | ECOSYSTEM: TERRACARE_LEDGER
 ```
 
 ---
 
-## Environment
+## COMMUNITY VOTING
 
+The Voting system (Phase 27) allows the Terracare community to:
+
+- **Create proposals** — any user with a sovereign identity can submit
+- **Vote YES/NO** — one vote per user per proposal, signed to ledger
+- **Quorum** — 5 votes minimum (beta), 10% of active users (production)
+- **Auto-resolve** — proposals pass or fail when quorum is met
+- **Permanent record** — all votes and results written to the Terracare Ledger
+
+### Proposal Categories
+- CONSERVATION · POLLEN · GOVERNANCE · FAUNA · SWARM · COMMUNITY · GENERAL
+
+---
+
+## CONSERVATION DASHBOARD
+
+Tracks 40 native Australian species across all 8 states and territories:
+
+| Status | Count |
+|--------|-------|
+| Critically Endangered | 8 species |
+| Endangered | 14 species |
+| Vulnerable | 9 species |
+| Near Threatened | 5 species |
+| Least Concern | 3 species |
+| Data Deficient | 1 species |
+
+Conservation fund allocation (15% of all Pollen revenue):
+- 40% Species Protection Programs
+- 30% Habitat Restoration
+- 20% Community Education
+- 10% Research & Monitoring
+
+---
+
+## REVENUE SPLIT
+
+All Pollen revenue is split as follows:
+
+| Recipient | Split |
+|-----------|-------|
+| Creator Rewards | 70% |
+| Conservation Fund | 15% |
+| Swarm Infrastructure | 6% |
+| Founder's Token (90-day vest) | 5% |
+| Advertising Standards | 4% |
+
+---
+
+## SHARED localStorage KEYS
+
+The Ledger UI reads from the same localStorage keys used by all Terracare apps:
+
+```javascript
+terracare_ledger      // Primary ledger entries array
+tc_ledger_log         // Secondary ledger log
+oriana_identity       // Sovereign NFT identity
+tc_pollen_balance     // Pollen token balance
+tc_fauna_collection   // Caught fauna cards
+tc_proposals          // Community proposals
+tc_votes              // Cast votes
 ```
-TERRACARE_RPC_URL=http://localhost:8545
-DEPLOYER_PRIVATE_KEY=0x...
-TERRACARE_CHAIN_ID=1337
-```
 
 ---
 
-## Contracts
+## LEDGER SCHEMA
 
-### Core v1.0 (Pillars 1-4)
-| Contract | Pillar | Purpose |
-|----------|--------|---------|
-| `IdentityRegistry` | P1 | Register roles, activate/deactivate |
-| `AccessControl` | P2 | Patient grants/revokes caregiver access |
-| `RecordRegistry` | P3 | Store data hashes/pointers with versions |
-| `AuditLog` | P4 | Append-only event log |
-
-### Participation v2.0 (Pillars 5-7)
-| Contract | Pillar | Purpose |
-|----------|--------|---------|
-| `ActivityRegistry` | P5 | Log health activities with anti-gaming |
-| `TokenEngine` | P6 | Dual-token system (MINE/WELL) |
-| `RevenueDistributor` | P7 | Cooperative revenue sharing |
-| `GovernanceBridge` | P4 | Timelock transition to governance |
+See `schema/ledger-entry.json` for the full entry schema.
+See `schema/identity.json` for the identity schema.
+See `LEDGER_SPEC.md` for the complete ledger specification.
 
 ---
 
-## S.O.F.I.E. Integration
-
-Terracare provides the **Origin (O)** layer for S.O.F.I.E.:
-
-```
-S.O.F.I.E. Operators:
-├── Source (S) → sofie-systems
-├── Origin (O) → **Terracare-Ledger** ← YOU ARE HERE
-├── Force (F) → sandironratio-node
-├── Intelligence (I) → sandironratio-node
-└── Eternal (E) → sofie-systems
-```
-
-See [SEVEN_PILLARS.md](./SEVEN_PILLARS.md) for complete architecture.
-
----
-
-## API Structure
-
-All endpoints follow the pillar convention:
-
-```
-POST /p1/identity/register       # Pillar 1: Identity
-POST /p2/access/grant            # Pillar 2: Access
-GET  /p3/records/:id             # Pillar 3: Records
-GET  /p4/audit/events            # Pillar 4: Audit
-POST /p5/participation/activity  # Pillar 5: Activity
-POST /p6/tokens/convert          # Pillar 6: Tokens
-GET  /p7/revenue/distribution    # Pillar 7: Revenue
-```
-
----
-
-## Notes
-
-- Use IPFS/S3 + AES for encrypted payloads; store hash on-chain
-- Run 3–5 validators; set gasPrice=0 on nodes for fee-less ops
-- Add org-level allowlists in IdentityRegistry as needed
-
----
-
-## Related Repositories
-
-| Repo | Layer | Role |
-|------|-------|------|
-| [sofie-systems](https://github.com/DudeAdrian/sofie-systems) | Layer 2 | S.O.F.I.E. core engine |
-| [sandironratio-node](https://github.com/DudeAdrian/sandironratio-node) | Layer 3 | 9 Chambers Academy |
-
----
-
-## Next
-
-- [ ] Add API gateway with rate limiting
-- [ ] Add CI for compile/test
-- [ ] Add org admin flows
-- [ ] Complete cross-repo bridge
-
----
-
-> *"The Dude abides."*  
-> — A.S.
+*Terracare / Harmonic Habitats — Sovereign Ledger — Australia*
+*Every entry signed. Every record permanent. No central authority.*

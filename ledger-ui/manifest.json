@@ -1,0 +1,45 @@
+{
+  "name": "Terracare Ledger",
+  "short_name": "TC Ledger",
+  "description": "Public ecosystem explorer — conservation dashboard, community voting, fund allocation, live ledger feed.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0800",
+  "theme_color": "#0A0800",
+  "orientation": "portrait-primary",
+  "lang": "en-AU",
+  "categories": ["utilities", "social", "education"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230A0800'/><polygon points='96,20 172,62 172,130 96,172 20,130 20,62' fill='%23FFD166'/><text x='96' y='115' font-size='72' text-anchor='middle' fill='%230A0800'>&#x1F36F;</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230A0800'/><polygon points='256,40 472,152 472,360 256,472 40,360 40,152' fill='%23FFD166'/><text x='256' y='310' font-size='200' text-anchor='middle' fill='%230A0800'>&#x1F36F;</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "label": "Live Ledger Feed",
+      "sizes": "1280x720",
+      "type": "image/png"
+    },
+    {
+      "label": "Conservation Dashboard",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://oriana.app"
+    }
+  ],
+  "prefer_related_applications": false
+}
