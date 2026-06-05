@@ -2,10 +2,134 @@
  * TERRACARE LEDGER UI — ledger_ui.js
  * Phase 25 | Public Ledger Explorer
  * Reads from localStorage shared across all Terracare apps
+ * Also polls SOFIE HTTP Bridge (localhost:7700) for live data when running locally
  * Tabs: LIVE FEED · CONSERVATION · FUND ALLOCATION · ECOSYSTEM STATS · VOTING
  */
 
 'use strict';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SOFIE HTTP BRIDGE — Live data feed for Ledger UI
+// Polls localhost:7700 every 15 seconds when SOFIE is running.
+// Merges SOFIE ledger entries into localStorage so TCLedgerUI reads them.
+// Silent fail — UI works from localStorage alone if SOFIE is offline.
+// ═══════════════════════════════════════════════════════════════════════════
+(function() {
+  var SOFIE_URL = 'http://localhost:7700';
+  var _online   = false;
+  var _statusEl = null;
+
+  function updateStatusBadge(online, sofieId) {
+    if (!_statusEl) {
+      _statusEl = document.getElementById('sofie-status-badge');
+    }
+    if (!_statusEl) return;
+    if (online) {
+      _statusEl.textContent = '🟢 SOFIE ONLINE' + (sofieId ? ' · ' + sofieId : '');
+      _statusEl.style.color = '#52FF6A';
+    } else {
+      _statusEl.textContent = '⚫ SOFIE OFFLINE';
+      _statusEl.style.color = '#888';
+    }
+  }
+
+  function mergeLedgerEntries(sofieEntries) {
+    if (!Array.isArray(sofieEntries) || sofieEntries.length === 0) return;
+    try {
+      // Read existing localStorage ledger
+      var existing = [];
+      try { existing = JSON.parse(localStorage.getItem('terracare_ledger') || '[]'); } catch(e) {}
+      if (!Array.isArray(existing)) existing = [];
+
+      // Build a set of existing IDs to avoid duplicates
+      var existingIds = new Set(existing.map(function(e) { return e.id || e.timestamp; }));
+
+      // Add new SOFIE entries that aren't already present
+      var added = 0;
+      sofieEntries.forEach(function(entry) {
+        var key = entry.id || entry.timestamp;
+        if (!existingIds.has(key)) {
+          existing.push(entry);
+          existingIds.add(key);
+          added++;
+        }
+      });
+
+      if (added > 0) {
+        // Sort by timestamp descending, keep last 500
+        existing.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+        existing = existing.slice(0, 500);
+        localStorage.setItem('terracare_ledger', JSON.stringify(existing));
+        // Trigger UI refresh if TCLedgerUI is loaded
+        if (window.TCLedgerUI && window.TCLedgerUI.refresh) {
+          window.TCLedgerUI.refresh();
+        }
+      }
+    } catch(e) {}
+  }
+
+  function pollSOFIE() {
+    // Poll ledger
+    fetch(SOFIE_URL + '/ledger', {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (!_online) {
+        _online = true;
+        updateStatusBadge(true, data.sofie_id);
+        console.log('[LedgerUI] SOFIE online — live feed active:', data.sofie_id);
+      }
+      mergeLedgerEntries(data.entries || []);
+
+      // Store SOFIE metadata
+      try {
+        localStorage.setItem('tc:sofie:id', data.sofie_id || 'SOFIE');
+        localStorage.setItem('tc:sofie:last_sync', data.last_sync || new Date().toISOString());
+      } catch(e) {}
+    })
+    .catch(function() {
+      if (_online) {
+        _online = false;
+        updateStatusBadge(false);
+      }
+    });
+
+    // Poll swarm status
+    fetch(SOFIE_URL + '/swarm')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      try { localStorage.setItem('tc:sofie:swarm', JSON.stringify(data.swarm || {})); } catch(e) {}
+    })
+    .catch(function() {});
+
+    // Poll ecosystem
+    fetch(SOFIE_URL + '/ecosystem')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      try { localStorage.setItem('tc:sofie:ecosystem', JSON.stringify(data.repos || {})); } catch(e) {}
+    })
+    .catch(function() {});
+  }
+
+  // Start polling after DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(pollSOFIE, 1000);
+      setInterval(pollSOFIE, 15000);
+    });
+  } else {
+    setTimeout(pollSOFIE, 1000);
+    setInterval(pollSOFIE, 15000);
+  }
+
+  // Public API
+  window.TCSOFIELedgerPoll = {
+    isOnline: function() { return _online; },
+    poll:     pollSOFIE,
+  };
+})();
 
 window.TCLedgerUI = (function () {
 

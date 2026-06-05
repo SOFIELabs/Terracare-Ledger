@@ -1,0 +1,872 @@
+{
+  "version": "1.0",
+  "total": 288,
+  "standard": 144,
+  "gold": 144,
+  "species": [
+    {
+      "id": "kangaroo",
+      "name": "Kangaroo",
+      "standard": "kangaroo.glb",
+      "gold": "kangaroo_gold.glb"
+    },
+    {
+      "id": "koala",
+      "name": "Koala",
+      "standard": "koala.glb",
+      "gold": "koala_gold.glb"
+    },
+    {
+      "id": "wombat",
+      "name": "Wombat",
+      "standard": "wombat.glb",
+      "gold": "wombat_gold.glb"
+    },
+    {
+      "id": "echidna",
+      "name": "Echidna",
+      "standard": "echidna.glb",
+      "gold": "echidna_gold.glb"
+    },
+    {
+      "id": "quokka",
+      "name": "Quokka",
+      "standard": "quokka.glb",
+      "gold": "quokka_gold.glb"
+    },
+    {
+      "id": "platypus",
+      "name": "Platypus",
+      "standard": "platypus.glb",
+      "gold": "platypus_gold.glb"
+    },
+    {
+      "id": "tasmanian_devil",
+      "name": "Tasmanian Devil",
+      "standard": "tasmanian_devil.glb",
+      "gold": "tasmanian_devil_gold.glb"
+    },
+    {
+      "id": "cassowary",
+      "name": "Cassowary",
+      "standard": "cassowary.glb",
+      "gold": "cassowary_gold.glb"
+    },
+    {
+      "id": "emu",
+      "name": "Emu",
+      "standard": "emu.glb",
+      "gold": "emu_gold.glb"
+    },
+    {
+      "id": "kookaburra",
+      "name": "Kookaburra",
+      "standard": "kookaburra.glb",
+      "gold": "kookaburra_gold.glb"
+    },
+    {
+      "id": "cockatoo",
+      "name": "Cockatoo",
+      "standard": "cockatoo.glb",
+      "gold": "cockatoo_gold.glb"
+    },
+    {
+      "id": "galah",
+      "name": "Galah",
+      "standard": "galah.glb",
+      "gold": "galah_gold.glb"
+    },
+    {
+      "id": "lorikeet",
+      "name": "Lorikeet",
+      "standard": "lorikeet.glb",
+      "gold": "lorikeet_gold.glb"
+    },
+    {
+      "id": "magpie",
+      "name": "Magpie",
+      "standard": "magpie.glb",
+      "gold": "magpie_gold.glb"
+    },
+    {
+      "id": "wedge_tail_eagle",
+      "name": "Wedge Tail Eagle",
+      "standard": "wedge_tail_eagle.glb",
+      "gold": "wedge_tail_eagle_gold.glb"
+    },
+    {
+      "id": "peregrine_falcon",
+      "name": "Peregrine Falcon",
+      "standard": "peregrine_falcon.glb",
+      "gold": "peregrine_falcon_gold.glb"
+    },
+    {
+      "id": "barn_owl",
+      "name": "Barn Owl",
+      "standard": "barn_owl.glb",
+      "gold": "barn_owl_gold.glb"
+    },
+    {
+      "id": "tawny_frogmouth",
+      "name": "Tawny Frogmouth",
+      "standard": "tawny_frogmouth.glb",
+      "gold": "tawny_frogmouth_gold.glb"
+    },
+    {
+      "id": "blue_tongue_lizard",
+      "name": "Blue Tongue Lizard",
+      "standard": "blue_tongue_lizard.glb",
+      "gold": "blue_tongue_lizard_gold.glb"
+    },
+    {
+      "id": "thorny_devil",
+      "name": "Thorny Devil",
+      "standard": "thorny_devil.glb",
+      "gold": "thorny_devil_gold.glb"
+    },
+    {
+      "id": "frilled_neck_lizard",
+      "name": "Frilled Neck Lizard",
+      "standard": "frilled_neck_lizard.glb",
+      "gold": "frilled_neck_lizard_gold.glb"
+    },
+    {
+      "id": "saltwater_croc",
+      "name": "Saltwater Croc",
+      "standard": "saltwater_croc.glb",
+      "gold": "saltwater_croc_gold.glb"
+    },
+    {
+      "id": "freshwater_croc",
+      "name": "Freshwater Croc",
+      "standard": "freshwater_croc.glb",
+      "gold": "freshwater_croc_gold.glb"
+    },
+    {
+      "id": "goanna",
+      "name": "Goanna",
+      "standard": "goanna.glb",
+      "gold": "goanna_gold.glb"
+    },
+    {
+      "id": "carpet_python",
+      "name": "Carpet Python",
+      "standard": "carpet_python.glb",
+      "gold": "carpet_python_gold.glb"
+    },
+    {
+      "id": "tiger_snake",
+      "name": "Tiger Snake",
+      "standard": "tiger_snake.glb",
+      "gold": "tiger_snake_gold.glb"
+    },
+    {
+      "id": "eastern_brown",
+      "name": "Eastern Brown",
+      "standard": "eastern_brown.glb",
+      "gold": "eastern_brown_gold.glb"
+    },
+    {
+      "id": "red_bellied_black",
+      "name": "Red Bellied Black",
+      "standard": "red_bellied_black.glb",
+      "gold": "red_bellied_black_gold.glb"
+    },
+    {
+      "id": "tree_frog",
+      "name": "Tree Frog",
+      "standard": "tree_frog.glb",
+      "gold": "tree_frog_gold.glb"
+    },
+    {
+      "id": "corroboree_frog",
+      "name": "Corroboree Frog",
+      "standard": "corroboree_frog.glb",
+      "gold": "corroboree_frog_gold.glb"
+    },
+    {
+      "id": "green_tree_frog",
+      "name": "Green Tree Frog",
+      "standard": "green_tree_frog.glb",
+      "gold": "green_tree_frog_gold.glb"
+    },
+    {
+      "id": "numbat",
+      "name": "Numbat",
+      "standard": "numbat.glb",
+      "gold": "numbat_gold.glb"
+    },
+    {
+      "id": "bilby",
+      "name": "Bilby",
+      "standard": "bilby.glb",
+      "gold": "bilby_gold.glb"
+    },
+    {
+      "id": "bettong",
+      "name": "Bettong",
+      "standard": "bettong.glb",
+      "gold": "bettong_gold.glb"
+    },
+    {
+      "id": "potoroo",
+      "name": "Potoroo",
+      "standard": "potoroo.glb",
+      "gold": "potoroo_gold.glb"
+    },
+    {
+      "id": "pademelon",
+      "name": "Pademelon",
+      "standard": "pademelon.glb",
+      "gold": "pademelon_gold.glb"
+    },
+    {
+      "id": "wallaby",
+      "name": "Wallaby",
+      "standard": "wallaby.glb",
+      "gold": "wallaby_gold.glb"
+    },
+    {
+      "id": "wallaroo",
+      "name": "Wallaroo",
+      "standard": "wallaroo.glb",
+      "gold": "wallaroo_gold.glb"
+    },
+    {
+      "id": "rock_wallaby",
+      "name": "Rock Wallaby",
+      "standard": "rock_wallaby.glb",
+      "gold": "rock_wallaby_gold.glb"
+    },
+    {
+      "id": "tree_kangaroo",
+      "name": "Tree Kangaroo",
+      "standard": "tree_kangaroo.glb",
+      "gold": "tree_kangaroo_gold.glb"
+    },
+    {
+      "id": "sugar_glider",
+      "name": "Sugar Glider",
+      "standard": "sugar_glider.glb",
+      "gold": "sugar_glider_gold.glb"
+    },
+    {
+      "id": "squirrel_glider",
+      "name": "Squirrel Glider",
+      "standard": "squirrel_glider.glb",
+      "gold": "squirrel_glider_gold.glb"
+    },
+    {
+      "id": "feathertail_glider",
+      "name": "Feathertail Glider",
+      "standard": "feathertail_glider.glb",
+      "gold": "feathertail_glider_gold.glb"
+    },
+    {
+      "id": "pygmy_possum",
+      "name": "Pygmy Possum",
+      "standard": "pygmy_possum.glb",
+      "gold": "pygmy_possum_gold.glb"
+    },
+    {
+      "id": "ringtail_possum",
+      "name": "Ringtail Possum",
+      "standard": "ringtail_possum.glb",
+      "gold": "ringtail_possum_gold.glb"
+    },
+    {
+      "id": "brushtail_possum",
+      "name": "Brushtail Possum",
+      "standard": "brushtail_possum.glb",
+      "gold": "brushtail_possum_gold.glb"
+    },
+    {
+      "id": "spotted_quoll",
+      "name": "Spotted Quoll",
+      "standard": "spotted_quoll.glb",
+      "gold": "spotted_quoll_gold.glb"
+    },
+    {
+      "id": "eastern_quoll",
+      "name": "Eastern Quoll",
+      "standard": "eastern_quoll.glb",
+      "gold": "eastern_quoll_gold.glb"
+    },
+    {
+      "id": "antechinus",
+      "name": "Antechinus",
+      "standard": "antechinus.glb",
+      "gold": "antechinus_gold.glb"
+    },
+    {
+      "id": "dunnart",
+      "name": "Dunnart",
+      "standard": "dunnart.glb",
+      "gold": "dunnart_gold.glb"
+    },
+    {
+      "id": "dugong",
+      "name": "Dugong",
+      "standard": "dugong.glb",
+      "gold": "dugong_gold.glb"
+    },
+    {
+      "id": "humpback_whale",
+      "name": "Humpback Whale",
+      "standard": "humpback_whale.glb",
+      "gold": "humpback_whale_gold.glb"
+    },
+    {
+      "id": "southern_right_whale",
+      "name": "Southern Right Whale",
+      "standard": "southern_right_whale.glb",
+      "gold": "southern_right_whale_gold.glb"
+    },
+    {
+      "id": "bottlenose_dolphin",
+      "name": "Bottlenose Dolphin",
+      "standard": "bottlenose_dolphin.glb",
+      "gold": "bottlenose_dolphin_gold.glb"
+    },
+    {
+      "id": "common_dolphin",
+      "name": "Common Dolphin",
+      "standard": "common_dolphin.glb",
+      "gold": "common_dolphin_gold.glb"
+    },
+    {
+      "id": "sea_lion",
+      "name": "Sea Lion",
+      "standard": "sea_lion.glb",
+      "gold": "sea_lion_gold.glb"
+    },
+    {
+      "id": "fur_seal",
+      "name": "Fur Seal",
+      "standard": "fur_seal.glb",
+      "gold": "fur_seal_gold.glb"
+    },
+    {
+      "id": "little_penguin",
+      "name": "Little Penguin",
+      "standard": "little_penguin.glb",
+      "gold": "little_penguin_gold.glb"
+    },
+    {
+      "id": "great_white_shark",
+      "name": "Great White Shark",
+      "standard": "great_white_shark.glb",
+      "gold": "great_white_shark_gold.glb"
+    },
+    {
+      "id": "whale_shark",
+      "name": "Whale Shark",
+      "standard": "whale_shark.glb",
+      "gold": "whale_shark_gold.glb"
+    },
+    {
+      "id": "manta_ray",
+      "name": "Manta Ray",
+      "standard": "manta_ray.glb",
+      "gold": "manta_ray_gold.glb"
+    },
+    {
+      "id": "leafy_sea_dragon",
+      "name": "Leafy Sea Dragon",
+      "standard": "leafy_sea_dragon.glb",
+      "gold": "leafy_sea_dragon_gold.glb"
+    },
+    {
+      "id": "weedy_sea_dragon",
+      "name": "Weedy Sea Dragon",
+      "standard": "weedy_sea_dragon.glb",
+      "gold": "weedy_sea_dragon_gold.glb"
+    },
+    {
+      "id": "clownfish",
+      "name": "Clownfish",
+      "standard": "clownfish.glb",
+      "gold": "clownfish_gold.glb"
+    },
+    {
+      "id": "blue_groper",
+      "name": "Blue Groper",
+      "standard": "blue_groper.glb",
+      "gold": "blue_groper_gold.glb"
+    },
+    {
+      "id": "coral_trout",
+      "name": "Coral Trout",
+      "standard": "coral_trout.glb",
+      "gold": "coral_trout_gold.glb"
+    },
+    {
+      "id": "barramundi",
+      "name": "Barramundi",
+      "standard": "barramundi.glb",
+      "gold": "barramundi_gold.glb"
+    },
+    {
+      "id": "murray_cod",
+      "name": "Murray Cod",
+      "standard": "murray_cod.glb",
+      "gold": "murray_cod_gold.glb"
+    },
+    {
+      "id": "golden_perch",
+      "name": "Golden Perch",
+      "standard": "golden_perch.glb",
+      "gold": "golden_perch_gold.glb"
+    },
+    {
+      "id": "silver_perch",
+      "name": "Silver Perch",
+      "standard": "silver_perch.glb",
+      "gold": "silver_perch_gold.glb"
+    },
+    {
+      "id": "red_kangaroo",
+      "name": "Red Kangaroo",
+      "standard": "red_kangaroo.glb",
+      "gold": "red_kangaroo_gold.glb"
+    },
+    {
+      "id": "grey_kangaroo",
+      "name": "Grey Kangaroo",
+      "standard": "grey_kangaroo.glb",
+      "gold": "grey_kangaroo_gold.glb"
+    },
+    {
+      "id": "antilopine_kangaroo",
+      "name": "Antilopine Kangaroo",
+      "standard": "antilopine_kangaroo.glb",
+      "gold": "antilopine_kangaroo_gold.glb"
+    },
+    {
+      "id": "euro",
+      "name": "Euro",
+      "standard": "euro.glb",
+      "gold": "euro_gold.glb"
+    },
+    {
+      "id": "dingo",
+      "name": "Dingo",
+      "standard": "dingo.glb",
+      "gold": "dingo_gold.glb"
+    },
+    {
+      "id": "flying_fox",
+      "name": "Flying Fox",
+      "standard": "flying_fox.glb",
+      "gold": "flying_fox_gold.glb"
+    },
+    {
+      "id": "ghost_bat",
+      "name": "Ghost Bat",
+      "standard": "ghost_bat.glb",
+      "gold": "ghost_bat_gold.glb"
+    },
+    {
+      "id": "orange_horseshoe_bat",
+      "name": "Orange Horseshoe Bat",
+      "standard": "orange_horseshoe_bat.glb",
+      "gold": "orange_horseshoe_bat_gold.glb"
+    },
+    {
+      "id": "brolga",
+      "name": "Brolga",
+      "standard": "brolga.glb",
+      "gold": "brolga_gold.glb"
+    },
+    {
+      "id": "jabiru",
+      "name": "Jabiru",
+      "standard": "jabiru.glb",
+      "gold": "jabiru_gold.glb"
+    },
+    {
+      "id": "royal_spoonbill",
+      "name": "Royal Spoonbill",
+      "standard": "royal_spoonbill.glb",
+      "gold": "royal_spoonbill_gold.glb"
+    },
+    {
+      "id": "yellow_billed_spoonbill",
+      "name": "Yellow Billed Spoonbill",
+      "standard": "yellow_billed_spoonbill.glb",
+      "gold": "yellow_billed_spoonbill_gold.glb"
+    },
+    {
+      "id": "pelican",
+      "name": "Pelican",
+      "standard": "pelican.glb",
+      "gold": "pelican_gold.glb"
+    },
+    {
+      "id": "cormorant",
+      "name": "Cormorant",
+      "standard": "cormorant.glb",
+      "gold": "cormorant_gold.glb"
+    },
+    {
+      "id": "darter",
+      "name": "Darter",
+      "standard": "darter.glb",
+      "gold": "darter_gold.glb"
+    },
+    {
+      "id": "egret",
+      "name": "Egret",
+      "standard": "egret.glb",
+      "gold": "egret_gold.glb"
+    },
+    {
+      "id": "ibis",
+      "name": "Ibis",
+      "standard": "ibis.glb",
+      "gold": "ibis_gold.glb"
+    },
+    {
+      "id": "heron",
+      "name": "Heron",
+      "standard": "heron.glb",
+      "gold": "heron_gold.glb"
+    },
+    {
+      "id": "bittern",
+      "name": "Bittern",
+      "standard": "bittern.glb",
+      "gold": "bittern_gold.glb"
+    },
+    {
+      "id": "rail",
+      "name": "Rail",
+      "standard": "rail.glb",
+      "gold": "rail_gold.glb"
+    },
+    {
+      "id": "lyrebird",
+      "name": "Lyrebird",
+      "standard": "lyrebird.glb",
+      "gold": "lyrebird_gold.glb"
+    },
+    {
+      "id": "riflebird",
+      "name": "Riflebird",
+      "standard": "riflebird.glb",
+      "gold": "riflebird_gold.glb"
+    },
+    {
+      "id": "bowerbird",
+      "name": "Bowerbird",
+      "standard": "bowerbird.glb",
+      "gold": "bowerbird_gold.glb"
+    },
+    {
+      "id": "catbird",
+      "name": "Catbird",
+      "standard": "catbird.glb",
+      "gold": "catbird_gold.glb"
+    },
+    {
+      "id": "treecreeper",
+      "name": "Treecreeper",
+      "standard": "treecreeper.glb",
+      "gold": "treecreeper_gold.glb"
+    },
+    {
+      "id": "sitella",
+      "name": "Sitella",
+      "standard": "sitella.glb",
+      "gold": "sitella_gold.glb"
+    },
+    {
+      "id": "fantail",
+      "name": "Fantail",
+      "standard": "fantail.glb",
+      "gold": "fantail_gold.glb"
+    },
+    {
+      "id": "willie_wagtail",
+      "name": "Willie Wagtail",
+      "standard": "willie_wagtail.glb",
+      "gold": "willie_wagtail_gold.glb"
+    },
+    {
+      "id": "blue_wren",
+      "name": "Blue Wren",
+      "standard": "blue_wren.glb",
+      "gold": "blue_wren_gold.glb"
+    },
+    {
+      "id": "emu_wren",
+      "name": "Emu Wren",
+      "standard": "emu_wren.glb",
+      "gold": "emu_wren_gold.glb"
+    },
+    {
+      "id": "grasswren",
+      "name": "Grasswren",
+      "standard": "grasswren.glb",
+      "gold": "grasswren_gold.glb"
+    },
+    {
+      "id": "thornbill",
+      "name": "Thornbill",
+      "standard": "thornbill.glb",
+      "gold": "thornbill_gold.glb"
+    },
+    {
+      "id": "honeyeater",
+      "name": "Honeyeater",
+      "standard": "honeyeater.glb",
+      "gold": "honeyeater_gold.glb"
+    },
+    {
+      "id": "spinebill",
+      "name": "Spinebill",
+      "standard": "spinebill.glb",
+      "gold": "spinebill_gold.glb"
+    },
+    {
+      "id": "friarbird",
+      "name": "Friarbird",
+      "standard": "friarbird.glb",
+      "gold": "friarbird_gold.glb"
+    },
+    {
+      "id": "wattlebird",
+      "name": "Wattlebird",
+      "standard": "wattlebird.glb",
+      "gold": "wattlebird_gold.glb"
+    },
+    {
+      "id": "pardalote",
+      "name": "Pardalote",
+      "standard": "pardalote.glb",
+      "gold": "pardalote_gold.glb"
+    },
+    {
+      "id": "gerygone",
+      "name": "Gerygone",
+      "standard": "gerygone.glb",
+      "gold": "gerygone_gold.glb"
+    },
+    {
+      "id": "cisticola",
+      "name": "Cisticola",
+      "standard": "cisticola.glb",
+      "gold": "cisticola_gold.glb"
+    },
+    {
+      "id": "grassbird",
+      "name": "Grassbird",
+      "standard": "grassbird.glb",
+      "gold": "grassbird_gold.glb"
+    },
+    {
+      "id": "swift",
+      "name": "Swift",
+      "standard": "swift.glb",
+      "gold": "swift_gold.glb"
+    },
+    {
+      "id": "swallow",
+      "name": "Swallow",
+      "standard": "swallow.glb",
+      "gold": "swallow_gold.glb"
+    },
+    {
+      "id": "martin",
+      "name": "Martin",
+      "standard": "martin.glb",
+      "gold": "martin_gold.glb"
+    },
+    {
+      "id": "woodswallow",
+      "name": "Woodswallow",
+      "standard": "woodswallow.glb",
+      "gold": "woodswallow_gold.glb"
+    },
+    {
+      "id": "butcherbird",
+      "name": "Butcherbird",
+      "standard": "butcherbird.glb",
+      "gold": "butcherbird_gold.glb"
+    },
+    {
+      "id": "currawong",
+      "name": "Currawong",
+      "standard": "currawong.glb",
+      "gold": "currawong_gold.glb"
+    },
+    {
+      "id": "raven",
+      "name": "Raven",
+      "standard": "raven.glb",
+      "gold": "raven_gold.glb"
+    },
+    {
+      "id": "crow",
+      "name": "Crow",
+      "standard": "crow.glb",
+      "gold": "crow_gold.glb"
+    },
+    {
+      "id": "drongo",
+      "name": "Drongo",
+      "standard": "drongo.glb",
+      "gold": "drongo_gold.glb"
+    },
+    {
+      "id": "oriole",
+      "name": "Oriole",
+      "standard": "oriole.glb",
+      "gold": "oriole_gold.glb"
+    },
+    {
+      "id": "figbird",
+      "name": "Figbird",
+      "standard": "figbird.glb",
+      "gold": "figbird_gold.glb"
+    },
+    {
+      "id": "starling",
+      "name": "Starling",
+      "standard": "starling.glb",
+      "gold": "starling_gold.glb"
+    },
+    {
+      "id": "quail",
+      "name": "Quail",
+      "standard": "quail.glb",
+      "gold": "quail_gold.glb"
+    },
+    {
+      "id": "button_quail",
+      "name": "Button Quail",
+      "standard": "button_quail.glb",
+      "gold": "button_quail_gold.glb"
+    },
+    {
+      "id": "plains_wanderer",
+      "name": "Plains Wanderer",
+      "standard": "plains_wanderer.glb",
+      "gold": "plains_wanderer_gold.glb"
+    },
+    {
+      "id": "bustard",
+      "name": "Bustard",
+      "standard": "bustard.glb",
+      "gold": "bustard_gold.glb"
+    },
+    {
+      "id": "pratincole",
+      "name": "Pratincole",
+      "standard": "pratincole.glb",
+      "gold": "pratincole_gold.glb"
+    },
+    {
+      "id": "dotterel",
+      "name": "Dotterel",
+      "standard": "dotterel.glb",
+      "gold": "dotterel_gold.glb"
+    },
+    {
+      "id": "plover",
+      "name": "Plover",
+      "standard": "plover.glb",
+      "gold": "plover_gold.glb"
+    },
+    {
+      "id": "sandpiper",
+      "name": "Sandpiper",
+      "standard": "sandpiper.glb",
+      "gold": "sandpiper_gold.glb"
+    },
+    {
+      "id": "stint",
+      "name": "Stint",
+      "standard": "stint.glb",
+      "gold": "stint_gold.glb"
+    },
+    {
+      "id": "godwit",
+      "name": "Godwit",
+      "standard": "godwit.glb",
+      "gold": "godwit_gold.glb"
+    },
+    {
+      "id": "curlew",
+      "name": "Curlew",
+      "standard": "curlew.glb",
+      "gold": "curlew_gold.glb"
+    },
+    {
+      "id": "tern",
+      "name": "Tern",
+      "standard": "tern.glb",
+      "gold": "tern_gold.glb"
+    },
+    {
+      "id": "gull",
+      "name": "Gull",
+      "standard": "gull.glb",
+      "gold": "gull_gold.glb"
+    },
+    {
+      "id": "skua",
+      "name": "Skua",
+      "standard": "skua.glb",
+      "gold": "skua_gold.glb"
+    },
+    {
+      "id": "petrel",
+      "name": "Petrel",
+      "standard": "petrel.glb",
+      "gold": "petrel_gold.glb"
+    },
+    {
+      "id": "albatross",
+      "name": "Albatross",
+      "standard": "albatross.glb",
+      "gold": "albatross_gold.glb"
+    },
+    {
+      "id": "shearwater",
+      "name": "Shearwater",
+      "standard": "shearwater.glb",
+      "gold": "shearwater_gold.glb"
+    },
+    {
+      "id": "gannet",
+      "name": "Gannet",
+      "standard": "gannet.glb",
+      "gold": "gannet_gold.glb"
+    },
+    {
+      "id": "booby",
+      "name": "Booby",
+      "standard": "booby.glb",
+      "gold": "booby_gold.glb"
+    },
+    {
+      "id": "species_142",
+      "name": "Species 142",
+      "standard": "species_142.glb",
+      "gold": "species_142_gold.glb"
+    },
+    {
+      "id": "species_143",
+      "name": "Species 143",
+      "standard": "species_143.glb",
+      "gold": "species_143_gold.glb"
+    },
+    {
+      "id": "species_144",
+      "name": "Species 144",
+      "standard": "species_144.glb",
+      "gold": "species_144_gold.glb"
+    }
+  ]
+}

@@ -42,12 +42,20 @@ class SimpleEventEmitter {
   }
 }
 
+// TURN credentials — override via env vars in production
+const TURN_URL = (typeof process !== 'undefined' && process.env?.TURN_URL) || 'turn:openrelay.metered.ca:80';
+const TURN_USERNAME = (typeof process !== 'undefined' && process.env?.TURN_USERNAME) || 'openrelayproject';
+const TURN_CREDENTIAL = (typeof process !== 'undefined' && process.env?.TURN_CREDENTIAL) || 'openrelayproject';
+
 // P2P Configuration
 const P2P_CONFIG = {
   SIGNALING_SERVER: 'http://localhost:5000/api/p2p',
   ICE_SERVERS: [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: TURN_URL, username: TURN_USERNAME, credential: TURN_CREDENTIAL },
+    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
   ],
   MAX_PEERS: 10,
   RECONNECT_INTERVAL: 5000,
