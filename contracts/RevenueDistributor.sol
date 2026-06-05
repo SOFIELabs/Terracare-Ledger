@@ -8,345 +8,338 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title RevenueDistributor
- * @dev Cooperative revenue distribution for TerraCare Ledger v2.0
- * - Splits incoming revenue per cooperative model
- * - SEAL investor repayment with 3-5x cap
- * - Automatic stop when investor cap reached
+ * @dev Terracare ecosystem revenue distribution — confirmed split 70/15/5/4/6
+ *
+ * ORIANA TRANSACTIONS / MARKETPLACE / LIVE STREAMING / GIFTS:
+ *   70% — Creator          (direct to creator Pollen wallet)
+ *   15% — Terracare Ledger (operations, governance, infrastructure)
+ *    5% — Conservation Pool (100% deployed to four sub-categories)
+ *    4% — Team Pool         (multisig, TBD allocation)
+ *    6% — Architect Wallet  (sovereign founder, designated private address)
+ *
+ * CONSERVATION POOL INTERNAL ALLOCATION (governance-adjustable):
+ *   40% — Species Protection Programs
+ *   30% — Habitat Restoration
+ *   20% — Community Education
+ *   10% — Research and Monitoring
+ *
+ * AGENT SUBSCRIPTIONS:
+ *   100% — Conservation Pool (entire subscription fee)
  */
 contract RevenueDistributor is AccessControl, ReentrancyGuard {
-    
+
     bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant TREASURY_ROLE = keccak256("TREASURY_ROLE");
-    
+    bytes32 public constant ADMIN_ROLE        = keccak256("ADMIN_ROLE");
+    bytes32 public constant GOVERNANCE_ROLE   = keccak256("GOVERNANCE_ROLE");
+
     TokenEngine public tokenEngine;
-    
-    // Revenue split percentages (must sum to 100%)
-    struct RevenueSplit {
-        uint256 userBuybacks;      // 30% - User token buybacks
-        uint256 investorRepayment; // 20% - SEAL investor repayment
-        uint256 operations;        // 40% - Platform operations
-        uint256 reserve;           // 10% - Emergency reserve
-    }
-    
-    RevenueSplit public split = RevenueSplit({
-        userBuybacks: 30,
-        investorRepayment: 20,
-        operations: 40,
-        reserve: 10
-    });
-    
-    uint256 public constant PERCENTAGE_BASE = 100;
-    
-    // SEAL Investor tracking
-    struct SEALInvestor {
-        address investorAddress;
-        uint256 initialInvestment;  // Original investment amount
-        uint256 repaymentCap;       // 3-5x initial investment
-        uint256 paidAmount;         // Amount repaid so far
-        bool capReached;            // Whether cap has been reached
-        uint256 investmentDate;     // When investment was made
-    }
-    
-    SEALInvestor[] public sealInvestors;
-    mapping(address => uint256) public investorIndex;
-    uint256 public totalSEALInvested;
-    uint256 public totalSEALPaid;
-    
-    // Treasury addresses
-    address public userBuybackTreasury;
-    address public operationsTreasury;
-    address public reserveTreasury;
-    
-    // Revenue tracking
+
+    // ── Revenue split (must sum to 100) ─────────────────────────────────────
+    uint256 public constant PERCENTAGE_BASE       = 100;
+    uint256 public creatorShare       = 70;
+    uint256 public ledgerShare        = 15;
+    uint256 public conservationShare  =  5;
+    uint256 public teamPoolShare      =  4;
+    uint256 public architectWalletShare =  6;
+
+    // ── Conservation pool internal allocation (must sum to 100) ─────────────
+    uint256 public conservationSpeciesProtection = 40;
+    uint256 public conservationHabitatRestoration = 30;
+    uint256 public conservationCommunityEducation = 20;
+    uint256 public conservationResearchMonitoring = 10;
+
+    // ── Wallet addresses ─────────────────────────────────────────────────────
+    address public ledgerTreasury;       // Terracare Ledger operations wallet
+    address public conservationPool;     // Conservation pool multisig
+    address public teamPool;             // Team pool multisig (TBD allocation)
+    address public ARCHITECT_WALLET;     // Sovereign founder — designated private address
+
+    // Conservation sub-wallets (deployed from conservationPool by governance)
+    address public speciesProtectionWallet;
+    address public habitatRestorationWallet;
+    address public communityEducationWallet;
+    address public researchMonitoringWallet;
+
+    // ── Revenue tracking ─────────────────────────────────────────────────────
     uint256 public totalRevenueReceived;
-    uint256 public totalDistributedToUsers;
-    uint256 public totalDistributedToInvestors;
-    uint256 public totalDistributedToOperations;
-    uint256 public totalDistributedToReserve;
-    
-    // Buyback mechanism
-    uint256 public wellBuybackPrice;  // Price in wei per WELL token
-    bool public buybacksEnabled = true;
-    
-    // Events
-    event RevenueReceived(uint256 amount, string source);
+    uint256 public totalDistributedToCreators;
+    uint256 public totalDistributedToLedger;
+    uint256 public totalDistributedToConservation;
+    uint256 public totalDistributedToTeamPool;
+    uint256 public totalDistributedToArchitect;
+
+    uint256 public totalSubscriptionConservation;  // 100% subscription fees
+
+    // ── Events ───────────────────────────────────────────────────────────────
+    event RevenueReceived(uint256 amount, string source, address indexed creator);
     event RevenueDistributed(
-        uint256 userBuybackAmount,
-        uint256 investorAmount,
-        uint256 operationsAmount,
-        uint256 reserveAmount
+        address indexed creator,
+        uint256 creatorAmount,
+        uint256 ledgerAmount,
+        uint256 conservationAmount,
+        uint256 teamPoolAmount,
+        uint256 architectAmount
     );
-    event SEALInvestorAdded(address indexed investor, uint256 investment, uint256 cap);
-    event SEALRepayment(address indexed investor, uint256 amount, uint256 totalPaid);
-    event SEALCapReached(address indexed investor, uint256 totalRepaid);
-    event TokensBoughtBack(address indexed user, uint256 wellAmount, uint256 payment);
-    event SplitUpdated(uint256 userBuybacks, uint256 investorRepayment, uint256 operations, uint256 reserve);
-    
+    event SubscriptionReceived(uint256 amount, address indexed subscriber);
+    event ConservationDeployed(
+        uint256 speciesProtection,
+        uint256 habitatRestoration,
+        uint256 communityEducation,
+        uint256 researchMonitoring
+    );
+    event SplitUpdated(
+        uint256 creator,
+        uint256 ledger,
+        uint256 conservation,
+        uint256 teamPool,
+        uint256 architectWallet
+    );
+    event ConservationAllocationUpdated(
+        uint256 speciesProtection,
+        uint256 habitatRestoration,
+        uint256 communityEducation,
+        uint256 researchMonitoring
+    );
+    event ArchitectWalletUpdated(address indexed newAddress);
+
     constructor(
         address _tokenEngine,
-        address _userBuybackTreasury,
-        address _operationsTreasury,
-        address _reserveTreasury
+        address _ledgerTreasury,
+        address _conservationPool,
+        address _teamPool,
+        address _architectWallet
     ) {
-        require(_tokenEngine != address(0), "Invalid TokenEngine");
-        require(_userBuybackTreasury != address(0), "Invalid user treasury");
-        require(_operationsTreasury != address(0), "Invalid operations treasury");
-        require(_reserveTreasury != address(0), "Invalid reserve treasury");
-        
-        tokenEngine = TokenEngine(_tokenEngine);
-        userBuybackTreasury = _userBuybackTreasury;
-        operationsTreasury = _operationsTreasury;
-        reserveTreasury = _reserveTreasury;
-        
+        require(_tokenEngine       != address(0), "Invalid TokenEngine");
+        require(_ledgerTreasury    != address(0), "Invalid ledger treasury");
+        require(_conservationPool  != address(0), "Invalid conservation pool");
+        require(_teamPool          != address(0), "Invalid team pool");
+        require(_architectWallet   != address(0), "Invalid architect wallet");
+
+        tokenEngine      = TokenEngine(_tokenEngine);
+        ledgerTreasury   = _ledgerTreasury;
+        conservationPool = _conservationPool;
+        teamPool         = _teamPool;
+        ARCHITECT_WALLET = _architectWallet;
+
+        // Default conservation sub-wallets point to pool until governance deploys
+        speciesProtectionWallet  = _conservationPool;
+        habitatRestorationWallet = _conservationPool;
+        communityEducationWallet = _conservationPool;
+        researchMonitoringWallet = _conservationPool;
+
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(ADMIN_ROLE, msg.sender);
-        _grantRole(DISTRIBUTOR_ROLE, msg.sender);
-        
-        // Default WELL price: 0.001 ETH per WELL
-        wellBuybackPrice = 0.001 ether;
+        _grantRole(ADMIN_ROLE,         msg.sender);
+        _grantRole(GOVERNANCE_ROLE,    msg.sender);
+        _grantRole(DISTRIBUTOR_ROLE,   msg.sender);
     }
-    
+
+    // ── Core: distribute a transaction (Oriana / marketplace / gifts / streams)
     /**
-     * @dev Add SEAL investor
-     * @param investor Investor wallet address
-     * @param investmentAmount Initial investment in wei
-     * @param capMultiplier Multiplier for repayment cap (300-500 for 3x-5x)
+     * @dev Distribute revenue for a completed transaction.
+     * @param creator Address of the content creator (70% recipient).
      */
-    function addSEALInvestor(
-        address investor,
-        uint256 investmentAmount,
-        uint256 capMultiplier
-    ) external onlyRole(ADMIN_ROLE) {
-        require(investor != address(0), "Invalid investor address");
-        require(investmentAmount > 0, "Investment must be > 0");
-        require(capMultiplier >= 300 && capMultiplier <= 500, "Cap must be 3x-5x");
-        require(investorIndex[investor] == 0 && sealInvestors.length == 0 || 
-                investorIndex[investor] == 0 && sealInvestors[0].investorAddress != investor, 
-                "Investor already exists");
-        
-        uint256 repaymentCap = (investmentAmount * capMultiplier) / 100;
-        
-        sealInvestors.push(SEALInvestor({
-            investorAddress: investor,
-            initialInvestment: investmentAmount,
-            repaymentCap: repaymentCap,
-            paidAmount: 0,
-            capReached: false,
-            investmentDate: block.timestamp
-        }));
-        
-        investorIndex[investor] = sealInvestors.length;
-        totalSEALInvested += investmentAmount;
-        
-        emit SEALInvestorAdded(investor, investmentAmount, repaymentCap);
-    }
-    
-    /**
-     * @dev Receive and distribute revenue (called by webhook/oracle)
-     */
-    function distribute() external payable onlyRole(DISTRIBUTOR_ROLE) nonReentrant {
-        require(msg.value > 0, "No revenue to distribute");
-        
+    function distribute(address creator) external payable onlyRole(DISTRIBUTOR_ROLE) nonReentrant {
+        require(msg.value > 0,           "No revenue to distribute");
+        require(creator != address(0),   "Invalid creator address");
+
         totalRevenueReceived += msg.value;
-        
-        // Calculate splits
-        uint256 userBuybackAmount = (msg.value * split.userBuybacks) / PERCENTAGE_BASE;
-        uint256 investorAmount = (msg.value * split.investorRepayment) / PERCENTAGE_BASE;
-        uint256 operationsAmount = (msg.value * split.operations) / PERCENTAGE_BASE;
-        uint256 reserveAmount = msg.value - userBuybackAmount - investorAmount - operationsAmount;
-        
-        // Send to operations treasury
-        (bool opsSuccess, ) = operationsTreasury.call{value: operationsAmount}("");
-        require(opsSuccess, "Operations transfer failed");
-        totalDistributedToOperations += operationsAmount;
-        
-        // Send to reserve treasury
-        (bool resSuccess, ) = reserveTreasury.call{value: reserveAmount}("");
-        require(resSuccess, "Reserve transfer failed");
-        totalDistributedToReserve += reserveAmount;
-        
-        // Distribute to investors (respecting caps)
-        uint256 actualInvestorDistribution = _distributeToInvestors(investorAmount);
-        totalDistributedToInvestors += actualInvestorDistribution;
-        
-        // Remaining investor amount goes to user buybacks
-        uint256 totalUserAmount = userBuybackAmount + (investorAmount - actualInvestorDistribution);
-        
-        // Send to user buyback treasury
-        (bool buybackSuccess, ) = userBuybackTreasury.call{value: totalUserAmount}("");
-        require(buybackSuccess, "Buyback transfer failed");
-        totalDistributedToUsers += totalUserAmount;
-        
-        emit RevenueReceived(msg.value, "webhook");
-        emit RevenueDistributed(totalUserAmount, actualInvestorDistribution, operationsAmount, reserveAmount);
+
+        uint256 creatorAmount       = (msg.value * creatorShare)        / PERCENTAGE_BASE;
+        uint256 ledgerAmount        = (msg.value * ledgerShare)          / PERCENTAGE_BASE;
+        uint256 conservationAmount  = (msg.value * conservationShare)    / PERCENTAGE_BASE;
+        uint256 teamPoolAmount      = (msg.value * teamPoolShare)         / PERCENTAGE_BASE;
+        // Architect gets the remainder to avoid rounding dust
+        uint256 architectAmount     = msg.value
+                                      - creatorAmount
+                                      - ledgerAmount
+                                      - conservationAmount
+                                      - teamPoolAmount;
+
+        _send(creator,          creatorAmount,       "Creator transfer failed");
+        _send(ledgerTreasury,   ledgerAmount,        "Ledger transfer failed");
+        _send(teamPool,         teamPoolAmount,       "Team pool transfer failed");
+        _send(ARCHITECT_WALLET, architectAmount,     "Architect transfer failed");
+
+        _deployConservation(conservationAmount);
+
+        totalDistributedToCreators    += creatorAmount;
+        totalDistributedToLedger      += ledgerAmount;
+        totalDistributedToConservation += conservationAmount;
+        totalDistributedToTeamPool    += teamPoolAmount;
+        totalDistributedToArchitect   += architectAmount;
+
+        emit RevenueReceived(msg.value, "transaction", creator);
+        emit RevenueDistributed(creator, creatorAmount, ledgerAmount, conservationAmount, teamPoolAmount, architectAmount);
     }
-    
+
+    // ── Subscription revenue: 100% to conservation pool ─────────────────────
     /**
-     * @dev Distribute to investors respecting SEAL caps
+     * @dev Process an agent subscription payment — entire fee goes to conservation.
+     * @param subscriber Address of the subscribing user (for event logging).
      */
-    function _distributeToInvestors(uint256 amount) internal returns (uint256 actuallyDistributed) {
-        if (sealInvestors.length == 0 || amount == 0) {
-            return 0;
-        }
-        
-        // Count active investors (those who haven't reached cap)
-        uint256 activeInvestorCount = 0;
-        for (uint i = 0; i < sealInvestors.length; i++) {
-            if (!sealInvestors[i].capReached) {
-                activeInvestorCount++;
-            }
-        }
-        
-        if (activeInvestorCount == 0) {
-            return 0; // All investors have reached their caps
-        }
-        
-        uint256 perInvestor = amount / activeInvestorCount;
-        
-        for (uint i = 0; i < sealInvestors.length; i++) {
-            if (sealInvestors[i].capReached) continue;
-            
-            SEALInvestor storage investor = sealInvestors[i];
-            uint256 remainingToCap = investor.repaymentCap - investor.paidAmount;
-            uint256 payment = perInvestor > remainingToCap ? remainingToCap : perInvestor;
-            
-            // Send payment
-            (bool success, ) = investor.investorAddress.call{value: payment}("");
-            if (success) {
-                investor.paidAmount += payment;
-                actuallyDistributed += payment;
-                totalSEALPaid += payment;
-                
-                emit SEALRepayment(investor.investorAddress, payment, investor.paidAmount);
-                
-                // Check if cap reached
-                if (investor.paidAmount >= investor.repaymentCap) {
-                    investor.capReached = true;
-                    emit SEALCapReached(investor.investorAddress, investor.paidAmount);
-                }
-            }
-        }
+    function distributeSubscription(address subscriber) external payable onlyRole(DISTRIBUTOR_ROLE) nonReentrant {
+        require(msg.value > 0, "No subscription amount");
+
+        _deployConservation(msg.value);
+        totalSubscriptionConservation += msg.value;
+        totalDistributedToConservation += msg.value;
+
+        emit SubscriptionReceived(msg.value, subscriber);
     }
-    
-    /**
-     * @dev Buy back WELL tokens from user (user sells WELL for ETH)
-     * @param wellAmount Amount of WELL to sell
-     */
-    function sellWell(uint256 wellAmount) external nonReentrant {
-        require(buybacksEnabled, "Buybacks disabled");
-        require(wellAmount > 0, "Amount must be > 0");
-        
-        uint256 payment = wellAmount * wellBuybackPrice;
-        require(address(this).balance >= payment, "Insufficient treasury balance");
-        
-        // Burn WELL tokens from user
-        tokenEngine.burnWELL(wellAmount);
-        
-        // Send ETH to user
-        (bool success, ) = msg.sender.call{value: payment}("");
-        require(success, "Payment failed");
-        
-        emit TokensBoughtBack(msg.sender, wellAmount, payment);
+
+    // ── Internal: deploy conservation funds to four sub-categories ───────────
+    function _deployConservation(uint256 amount) internal {
+        if (amount == 0) return;
+
+        uint256 speciesAmount   = (amount * conservationSpeciesProtection) / PERCENTAGE_BASE;
+        uint256 habitatAmount   = (amount * conservationHabitatRestoration) / PERCENTAGE_BASE;
+        uint256 educationAmount = (amount * conservationCommunityEducation) / PERCENTAGE_BASE;
+        uint256 researchAmount  = amount - speciesAmount - habitatAmount - educationAmount;
+
+        _send(speciesProtectionWallet,  speciesAmount,   "Species protection transfer failed");
+        _send(habitatRestorationWallet, habitatAmount,   "Habitat restoration transfer failed");
+        _send(communityEducationWallet, educationAmount, "Community education transfer failed");
+        _send(researchMonitoringWallet, researchAmount,  "Research monitoring transfer failed");
+
+        emit ConservationDeployed(speciesAmount, habitatAmount, educationAmount, researchAmount);
     }
-    
-    /**
-     * @dev Calculate sell value for WELL
-     */
-    function calculateSellValue(uint256 wellAmount) external view returns (uint256) {
-        return wellAmount * wellBuybackPrice;
+
+    function _send(address to, uint256 amount, string memory errMsg) internal {
+        if (amount == 0) return;
+        (bool ok, ) = to.call{value: amount}("");
+        require(ok, errMsg);
     }
-    
-    /**
-     * @dev Update revenue split (governance decision)
-     */
+
+    // ── Governance: update split (must sum to 100) ───────────────────────────
     function setRevenueSplit(
-        uint256 _userBuybacks,
-        uint256 _investorRepayment,
-        uint256 _operations,
-        uint256 _reserve
+        uint256 _creator,
+        uint256 _ledger,
+        uint256 _conservation,
+        uint256 _teamPool,
+        uint256 _architectWallet
+    ) external onlyRole(GOVERNANCE_ROLE) {
+        require(
+            _creator + _ledger + _conservation + _teamPool + _architectWallet == 100,
+            "Split must sum to 100"
+        );
+        creatorShare          = _creator;
+        ledgerShare           = _ledger;
+        conservationShare     = _conservation;
+        teamPoolShare         = _teamPool;
+        architectWalletShare  = _architectWallet;
+        emit SplitUpdated(_creator, _ledger, _conservation, _teamPool, _architectWallet);
+    }
+
+    // ── Governance: update conservation allocation (must sum to 100) ─────────
+    function setConservationAllocation(
+        uint256 _speciesProtection,
+        uint256 _habitatRestoration,
+        uint256 _communityEducation,
+        uint256 _researchMonitoring
+    ) external onlyRole(GOVERNANCE_ROLE) {
+        require(
+            _speciesProtection + _habitatRestoration + _communityEducation + _researchMonitoring == 100,
+            "Conservation allocation must sum to 100"
+        );
+        conservationSpeciesProtection  = _speciesProtection;
+        conservationHabitatRestoration = _habitatRestoration;
+        conservationCommunityEducation = _communityEducation;
+        conservationResearchMonitoring = _researchMonitoring;
+        emit ConservationAllocationUpdated(_speciesProtection, _habitatRestoration, _communityEducation, _researchMonitoring);
+    }
+
+    // ── Admin: update wallet addresses ───────────────────────────────────────
+    function setLedgerTreasury(address _wallet) external onlyRole(ADMIN_ROLE) {
+        require(_wallet != address(0), "Invalid address");
+        ledgerTreasury = _wallet;
+    }
+
+    function setConservationPool(address _wallet) external onlyRole(ADMIN_ROLE) {
+        require(_wallet != address(0), "Invalid address");
+        conservationPool = _wallet;
+    }
+
+    function setTeamPool(address _wallet) external onlyRole(ADMIN_ROLE) {
+        require(_wallet != address(0), "Invalid address");
+        teamPool = _wallet;
+    }
+
+    function setArchitectWallet(address _wallet) external onlyRole(ADMIN_ROLE) {
+        require(_wallet != address(0), "Invalid address");
+        ARCHITECT_WALLET = _wallet;
+        emit ArchitectWalletUpdated(_wallet);
+    }
+
+    function setConservationSubWallets(
+        address _species,
+        address _habitat,
+        address _education,
+        address _research
     ) external onlyRole(ADMIN_ROLE) {
-        require(_userBuybacks + _investorRepayment + _operations + _reserve == 100, "Must sum to 100");
-        
-        split = RevenueSplit({
-            userBuybacks: _userBuybacks,
-            investorRepayment: _investorRepayment,
-            operations: _operations,
-            reserve: _reserve
-        });
-        
-        emit SplitUpdated(_userBuybacks, _investorRepayment, _operations, _reserve);
+        require(_species   != address(0), "Invalid species wallet");
+        require(_habitat   != address(0), "Invalid habitat wallet");
+        require(_education != address(0), "Invalid education wallet");
+        require(_research  != address(0), "Invalid research wallet");
+        speciesProtectionWallet  = _species;
+        habitatRestorationWallet = _habitat;
+        communityEducationWallet = _education;
+        researchMonitoringWallet = _research;
     }
-    
-    /**
-     * @dev Update WELL buyback price
-     */
-    function setWellBuybackPrice(uint256 newPrice) external onlyRole(ADMIN_ROLE) {
-        wellBuybackPrice = newPrice;
+
+    // ── Views ────────────────────────────────────────────────────────────────
+    function getSplitAmounts(uint256 grossAmount) external view returns (
+        uint256 creator,
+        uint256 ledger,
+        uint256 conservation,
+        uint256 teamPoolAmt,
+        uint256 architectWallet
+    ) {
+        creator        = (grossAmount * creatorShare)         / PERCENTAGE_BASE;
+        ledger         = (grossAmount * ledgerShare)           / PERCENTAGE_BASE;
+        conservation   = (grossAmount * conservationShare)     / PERCENTAGE_BASE;
+        teamPoolAmt    = (grossAmount * teamPoolShare)          / PERCENTAGE_BASE;
+        architectWallet = grossAmount - creator - ledger - conservation - teamPoolAmt;
     }
-    
-    /**
-     * @dev Toggle buybacks
-     */
-    function setBuybacksEnabled(bool enabled) external onlyRole(ADMIN_ROLE) {
-        buybacksEnabled = enabled;
+
+    function getConservationBreakdown(uint256 conservationAmount) external view returns (
+        uint256 species,
+        uint256 habitat,
+        uint256 education,
+        uint256 research
+    ) {
+        species   = (conservationAmount * conservationSpeciesProtection)  / PERCENTAGE_BASE;
+        habitat   = (conservationAmount * conservationHabitatRestoration) / PERCENTAGE_BASE;
+        education = (conservationAmount * conservationCommunityEducation) / PERCENTAGE_BASE;
+        research  = conservationAmount - species - habitat - education;
     }
-    
-    /**
-     * @dev Update treasury addresses
-     */
-    function setTreasuries(
-        address _userBuybackTreasury,
-        address _operationsTreasury,
-        address _reserveTreasury
-    ) external onlyRole(ADMIN_ROLE) {
-        require(_userBuybackTreasury != address(0), "Invalid address");
-        require(_operationsTreasury != address(0), "Invalid address");
-        require(_reserveTreasury != address(0), "Invalid address");
-        
-        userBuybackTreasury = _userBuybackTreasury;
-        operationsTreasury = _operationsTreasury;
-        reserveTreasury = _reserveTreasury;
+
+    function getRevenueSummary() external view returns (
+        uint256 totalReceived,
+        uint256 toCreators,
+        uint256 toLedger,
+        uint256 toConservation,
+        uint256 toTeamPool,
+        uint256 toArchitect,
+        uint256 fromSubscriptions
+    ) {
+        return (
+            totalRevenueReceived,
+            totalDistributedToCreators,
+            totalDistributedToLedger,
+            totalDistributedToConservation,
+            totalDistributedToTeamPool,
+            totalDistributedToArchitect,
+            totalSubscriptionConservation
+        );
     }
-    
-    /**
-     * @dev Get SEAL investor info
-     */
-    function getSEALInvestor(address investor) external view returns (SEALInvestor memory) {
-        uint256 idx = investorIndex[investor];
-        require(idx > 0 || (sealInvestors.length > 0 && sealInvestors[0].investorAddress == investor), "Investor not found");
-        return sealInvestors[idx > 0 ? idx - 1 : 0];
-    }
-    
-    /**
-     * @dev Get all SEAL investors
-     */
-    function getAllSEALInvestors() external view returns (SEALInvestor[] memory) {
-        return sealInvestors;
-    }
-    
-    /**
-     * @dev Check if all investors have reached their caps
-     */
-    function allCapsReached() external view returns (bool) {
-        for (uint i = 0; i < sealInvestors.length; i++) {
-            if (!sealInvestors[i].capReached) {
-                return false;
-            }
-        }
-        return sealInvestors.length > 0;
-    }
-    
-    /**
-     * @dev Emergency withdraw (governance only)
-     */
+
+    // ── Emergency withdraw (admin only) ─────────────────────────────────────
     function emergencyWithdraw(address to, uint256 amount) external onlyRole(ADMIN_ROLE) {
         require(to != address(0), "Invalid address");
-        (bool success, ) = to.call{value: amount}("");
-        require(success, "Withdraw failed");
+        _send(to, amount, "Emergency withdraw failed");
     }
-    
+
     receive() external payable {
-        emit RevenueReceived(msg.value, "direct");
+        emit RevenueReceived(msg.value, "direct", address(0));
     }
 }

@@ -10,13 +10,27 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * @dev Dual-token system for TerraCare Ledger v2.0
  * - MINE: Participation token (earned only, non-transferable initially)
  * - WELL: Utility token (bought or converted from MINE)
+ * - POLLEN: Ecosystem reward token earned through activity
+ *
+ * THREE MINT SYSTEM (per post):
+ *   Mint 1 — Master NFT on Terracare Ledger: full rights, never leaves ecosystem
+ *   Mint 2 — Oriana feed copy: earns Pollen through engagement
+ *   Mint 3 — Broadcast copy: distributed to external platforms with sovereignty watermark
+ *
+ * IDENTITY NFT — one per user, minted on join, signs every action across ecosystem.
+ *
+ * Revenue split applied at distribution: 70% creator / 15% ledger / 5% conservation
+ *   / 4% team pool / 6% ARCHITECT_WALLET (sovereign founder, designated private address).
  */
 contract TokenEngine is AccessControl, ReentrancyGuard {
-    
+
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
     bytes32 public constant ORACLE_ROLE = keccak256("ORACLE_ROLE");
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    bytes32 public constant ADMIN_ROLE  = keccak256("ADMIN_ROLE");
+
+    // Sovereign founder wallet — set at deploy, updateable by admin only
+    address public ARCHITECT_WALLET;
     
     // MINE Token - Participation token (earned only)
     string public constant MINE_NAME = "TerraCare MINE";
@@ -63,11 +77,29 @@ contract TokenEngine is AccessControl, ReentrancyGuard {
     event MineTransferEnabled(bool enabled);
     event Staked(address indexed user, uint256 amount, uint256 lockEnd);
     event Unstaked(address indexed user, uint256 amount);
-    
-    constructor() {
+    // Three-mint system events
+    event MasterNFTMinted(address indexed creator, uint256 indexed tokenId, bytes32 contentHash);
+    event OrianaCopyMinted(address indexed creator, uint256 indexed masterTokenId, uint256 indexed copyTokenId);
+    event BroadcastCopyMinted(address indexed creator, uint256 indexed masterTokenId, uint256 indexed broadcastTokenId);
+    // Identity NFT
+    event IdentityNFTMinted(address indexed user, uint256 indexed identityTokenId);
+    // AR Fauna catch
+    event FaunaCaught(address indexed user, string species, uint8 rarity, uint256 pollenReward);
+    // Architect wallet updated
+    event ArchitectWalletSet(address indexed wallet);
+
+    constructor(address _architectWallet) {
+        require(_architectWallet != address(0), "Invalid architect wallet");
+        ARCHITECT_WALLET = _architectWallet;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
+    }
+
+    function setArchitectWallet(address _wallet) external onlyRole(ADMIN_ROLE) {
+        require(_wallet != address(0), "Invalid address");
+        ARCHITECT_WALLET = _wallet;
+        emit ArchitectWalletSet(_wallet);
     }
     
     // ============ MINE Token Functions ============
