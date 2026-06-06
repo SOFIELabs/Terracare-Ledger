@@ -408,7 +408,7 @@ app.post('/api/holohive/sync', optionalAuth, (req, res) => {
       health=MAX(health,excluded.health),last_interaction=strftime('%s','now')
   `);
   try {
-    const sync = db.transaction((cells) => { for (const c of cells) stmt.run(c.id, c.sides?.BLOOM||0, c.sides?.FAUNA||0, c.sides?.MESH||0, c.sides?.IDENTITY||0, c.sides?.ACTIVITY||0, c.sides?.REWARD||0, c.health||0); });
+    const sync = db.transaction((cells) => { for (const c of cells) stmt.run(c.cellId || c.id, c.sides?.BLOOM||0, c.sides?.FAUNA||0, c.sides?.MESH||0, c.sides?.IDENTITY||0, c.sides?.ACTIVITY||0, c.sides?.REWARD||0, c.health||0); });
     sync(cells);
     res.json({ success: true, synced: cells.length });
   } catch (e) { res.status(500).json({ error: e.message }); }
