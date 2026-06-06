@@ -94,7 +94,7 @@ router.post(
       const activityId = ethers.keccak256(
         ethers.solidityPacked(
           ['bytes32', 'uint256', 'bytes32', 'uint256'],
-          [ethers.encodeBytes32String(userId), timestamp, ethers.encodeBytes32String(deviceId), block.timestamp]
+          [ethers.encodeBytes32String(userId), timestamp, ethers.encodeBytes32String(deviceId), Math.floor(Date.now() / 1000)]
         )
       );
 
@@ -206,7 +206,7 @@ router.post(
             ethers.encodeBytes32String(patientUserId),
             caregiverAddress,
             Date.parse(completionDate),
-            block.timestamp
+            Math.floor(Date.now() / 1000)
           ]
         )
       );
